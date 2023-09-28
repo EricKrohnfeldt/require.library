@@ -1,10 +1,18 @@
 package com.herbmarshall.require;
 
+import com.herbmarshall.standardPipe.Standard;
+
+import java.util.Objects;
+
 /**
  * Module to provide data assertions.
  * @param <T> The type of value to operate on
  */
 public final class Require<T> {
+
+	static final String SETUP_DIFF_MESSAGE = "No diff generated, please set DiffGenerator";
+	private static final DiffGenerator defaultDiffGen = new NoopDiffGenerator( SETUP_DIFF_MESSAGE );
+	private static DiffGenerator diffGen = defaultDiffGen;
 
 	static final String TODO_ENVIRONMENT_VARIABLE_NAME = "preliminaryTest";
 	static final String TODO_ENVIRONMENT_VARIABLE_VALUE = "true";
@@ -57,11 +65,14 @@ public final class Require<T> {
 	/**
 	 * Will check that {@code expected} is equal to {@code actual}.
 	 * Based on the {@link Object#equals(Object)} method.
+	 * On failure, {@link DiffGenerator} will generate a diff and print it to {@link Standard#err}
 	 * @throws AssertionError if {@code expected} is NOT equal to {@code actual}
 	 */
 	public void isEqualTo( T expected ) {
-		if ( checkEqual( expected ) )
+		if ( ! checkEqual( expected ) ) {
+			Standard.err.println( diffGen.diff( actual, expected ) );
 			throw new AssertionError( fault.isEqualTo( expected ).getMessage() );
+		}
 //		Objects.requireNonNull( message );
 //		if ( expected != null && expected.getClass().isArray() )
 //			isArrayEqual( message, ( Object[] ) expected, ( Object[] ) actual );
@@ -95,14 +106,13 @@ public final class Require<T> {
 	 * @throws AssertionError if {@code expected} is equal to {@code actual}
 	 */
 	public void isNotEqualTo( T expected ) {
-		if ( ! checkEqual( expected ) )
+		if ( checkEqual( expected ) )
 			throw new AssertionError( fault.isNotEqualTo( expected ).getMessage() );
 	}
 
 	private boolean checkEqual( T expected ) {
-		return
-			( actual == null ^ expected == null ) ||
-			( actual != null && ! actual.equals( expected ) );
+		return ( actual == null ) == ( expected == null ) &&
+			( actual == null || actual.equals( expected ) );
 	}
 
 	/** Set the displayed error message to the default. */
@@ -173,6 +183,14 @@ public final class Require<T> {
 	public static void todo( String message ) {
 		if ( checkForPreliminaryTestFlag() ) return;
 		throw new AssertionError( message );
+	}
+
+	/**
+	 * Set the {@link DiffGenerator} to use when {@link Require#isEqualTo(Object)} fails.
+	 * @param diffGenerator The {@link DiffGenerator} to use.  {@link null} value will set to default
+	 */
+	public static void setDiffGenerator( DiffGenerator diffGenerator ) {
+		Require.diffGen = Objects.requireNonNullElse( diffGenerator, defaultDiffGen );
 	}
 
 	private static boolean checkForPreliminaryTestFlag() {

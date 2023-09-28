@@ -1,10 +1,12 @@
 package com.herbmarshall.require;
 
 import com.herbmarshall.fault.Fault;
+import com.herbmarshall.standardPipe.Standard;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
+import java.io.ByteArrayOutputStream;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.BiConsumer;
@@ -12,8 +14,7 @@ import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-import static com.herbmarshall.require.Require.TODO_ENVIRONMENT_VARIABLE_NAME;
-import static com.herbmarshall.require.Require.TODO_ENVIRONMENT_VARIABLE_VALUE;
+import static com.herbmarshall.require.Require.*;
 
 class RequireTest {
 
@@ -193,6 +194,87 @@ class RequireTest {
 				// Assert
 				// Does not throw
 			} );
+		}
+
+	}
+
+	@Nested
+	class setDiffGenerator {
+
+		@Test
+		void noSet() {
+			// Arrange
+			String actual = randomString();
+			String expected = randomString();
+			ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+			Standard.err.override( buffer );
+			Require<String> require = Require.that( actual );
+			// Act
+			try {
+				require.isEqualTo( expected );
+				Assertions.fail();
+			}
+			// Assert
+			catch ( AssertionError e ) {
+				Require.fault( actual ).isEqualTo( expected ).validate( e );
+			}
+			finally {
+				Standard.err.reset();
+			}
+			Assertions.assertEquals( SETUP_DIFF_MESSAGE + "\n", buffer.toString() );
+		}
+
+		@Test
+		void set() {
+			// Arrange
+			String actual = randomString();
+			String expected = randomString();
+			ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+			Standard.err.override( buffer );
+			String diff = randomString();
+			DiffGeneratorStub generator = new DiffGeneratorStub( diff );
+			Require.setDiffGenerator( generator );
+			Require<String> require = Require.that( actual );
+			// Act
+			try {
+				require.isEqualTo( expected );
+				Assertions.fail();
+			}
+			// Assert
+			catch ( AssertionError e ) {
+				Require.fault( actual ).isEqualTo( expected ).validate( e );
+			}
+			finally {
+				Standard.err.reset();
+				Require.setDiffGenerator( null );
+			}
+			Assertions.assertEquals( actual, generator.getActual() );
+			Assertions.assertEquals( expected, generator.getExpected() );
+			Assertions.assertEquals( diff + "\n", buffer.toString() );
+		}
+
+		@Test
+		void unSet() {
+			// Arrange
+			String actual = randomString();
+			String expected = randomString();
+			ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+			Standard.err.override( buffer );
+			Require.setDiffGenerator( null );
+			Require<String> require = Require.that( actual );
+			// Act
+			try {
+				require.isEqualTo( expected );
+				Assertions.fail();
+			}
+			// Assert
+			catch ( AssertionError e ) {
+				Require.fault( actual ).isEqualTo( expected ).validate( e );
+			}
+			finally {
+				Standard.err.reset();
+			}
+			Assertions.assertEquals( SETUP_DIFF_MESSAGE + "\n", buffer.toString() );
 		}
 
 	}
