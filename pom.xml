@@ -20,9 +20,12 @@
 	<properties>
 
 		<util.major>   1   </util.major>
-		<fault.minor>   2   </fault.minor>
 
-		<fault.version>   ${util.major}.${fault.minor}   </fault.version>
+		<fault.minor>           2   </fault.minor>
+		<javaExtension.minor>   0   </javaExtension.minor>
+
+		<fault.version>                   ${util.major}.${fault.minor}   </fault.version>
+		<javaExtension.version>   ${util.major}.${javaExtension.minor}   </javaExtension.version>
 
 		<junit.version>   5.9.3   </junit.version>
 
@@ -34,6 +37,12 @@
 			<groupId>com.herbmarshall</groupId>
 			<artifactId>fault.library</artifactId>
 			<version>${fault.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.herbmarshall</groupId>
+			<artifactId>javaExtension.library</artifactId>
+			<version>${javaExtension.version}</version>
 		</dependency>
 
 		<dependency>
