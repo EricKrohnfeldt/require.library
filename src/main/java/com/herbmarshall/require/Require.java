@@ -1,5 +1,6 @@
 package com.herbmarshall.require;
 
+import com.herbmarshall.javaExtension.SelfTyped;
 import com.herbmarshall.standardPipe.Standard;
 
 import java.util.Objects;
@@ -7,8 +8,12 @@ import java.util.Objects;
 /**
  * Module to provide data assertions.
  * @param <T> The type of value to operate on
+ * @param <F> The type of {@link RequireFaultBuilder} to operate with
+ * @param <SELF> Self type reference
  */
-public final class Require<T> {
+public abstract sealed class Require<T, F extends RequireFaultBuilder<T, F>, SELF extends Require<T, F, SELF>>
+	extends SelfTyped<SELF>
+	permits RequirePointer {
 
 	static final String SETUP_DIFF_MESSAGE = "No diff generated, please set DiffGenerator";
 	private static final DiffGenerator defaultDiffGen = new NoopDiffGenerator( SETUP_DIFF_MESSAGE );
@@ -17,49 +22,13 @@ public final class Require<T> {
 	static final String TODO_ENVIRONMENT_VARIABLE_NAME = "preliminaryTest";
 	static final String TODO_ENVIRONMENT_VARIABLE_VALUE = "true";
 
-	private final T actual;
+	protected final T actual;
 
-	private final RequireFaultBuilder<T> fault;
+	protected final F fault;
 
-	Require( T actual ) {
+	Require( T actual, F fault ) {
 		this.actual = actual;
-		this.fault = Require.fault( actual );
-	}
-
-	/**
-	 * Will check {@code value} for {@code null} condition.
-	 * @throws AssertionError if {@code value} IS {@code null}
-	 */
-	public void isNull() {
-		if ( actual != null )
-			throw new AssertionError( fault.isNull().getMessage() );
-	}
-
-	/**
-	 * Will check {@code value} for {@code null} condition.
-	 * @throws AssertionError if {@code value} is NOT {@code null}
-	 */
-	public void isNotNull() {
-		if ( actual == null )
-			throw new AssertionError( fault.isNotNull().getMessage() );
-	}
-
-	/**
-	 * Will check that {@code expected} is the same pointer as {@code actual}.
-	 * @throws AssertionError if {@code expected} is NOT the same pointer as {@code actual}
-	 */
-	public void isTheSame( T expected ) {
-		if ( actual != expected )
-			throw new AssertionError( fault.isTheSame( expected ).getMessage() );
-	}
-
-	/**
-	 * Will check that {@code expected} is the same pointer as {@code actual}.
-	 * @throws AssertionError if {@code expected} IS the same pointer as {@code actual}
-	 */
-	public void isNotTheSame( T expected ) {
-		if ( actual == expected )
-			throw new AssertionError( fault.isNotTheSame().getMessage() );
+		this.fault = Objects.requireNonNull( fault );
 	}
 
 	/**
@@ -116,15 +85,15 @@ public final class Require<T> {
 	}
 
 	/** Set the displayed error message to the default. */
-	public Require<T> withDefaultMessage() {
+	public SELF withDefaultMessage() {
 		fault.withDefaultMessage();
-		return this;
+		return self();
 	}
 
 	/** Set the displayed error message. */
-	public Require<T> withMessage( String message ) {
+	public SELF withMessage( String message ) {
 		fault.withMessage( message );
-		return this;
+		return self();
 	}
 
 	/**
@@ -133,18 +102,18 @@ public final class Require<T> {
 	 * @return A new {@link Require} instance
 	 * @param <T> The type of value to operate on
 	 */
-	public static <T> Require<T> that( T actual ) {
-		return new Require<>( actual );
+	public static <T> RequirePointer<T> that( T actual ) {
+		return new RequirePointer<>( actual );
 	}
 
 	/**
-	 * Create a {@link RequireFaultBuilder} for specific data.
+	 * Create a {@link RequirePointerFaultBuilder} for specific data.
 	 * @param actual The data to evaluate
-	 * @return A new {@link RequireFaultBuilder} instance
+	 * @return A new {@link RequirePointerFaultBuilder} instance
 	 * @param <T> The type of value to operate on
 	 */
-	public static <T> RequireFaultBuilder<T> fault( T actual ) {
-		return new RequireFaultBuilder<>( actual );
+	public static <T> RequirePointerFaultBuilder<T> fault( T actual ) {
+		return new RequirePointerFaultBuilder<>( actual );
 	}
 
 	/**

@@ -1,27 +1,25 @@
 package com.herbmarshall.require;
 
 import com.herbmarshall.fault.Fault;
+import com.herbmarshall.javaExtension.SelfTyped;
 
 import java.util.Optional;
 
 /**
  * Module to provide data assertion {@link Fault Faults}.
  * @param <T> The type of value to operate on
+ * @param <SELF> Self type reference
  */
-public final class RequireFaultBuilder<T> {
+public abstract sealed class RequireFaultBuilder<T, SELF extends RequireFaultBuilder<T, SELF>>
+	extends SelfTyped<SELF>
+	permits RequirePointerFaultBuilder {
 
 	static final String CUSTOM_MESSAGE_TEMPLATE = "%s ( %s )";
-
-	static final String NULL_MESSAGE_TEMPLATE = "Required null, but found %s";
-	static final String NOT_NULL_MESSAGE_TEMPLATE = "Required pointer, but found null";
-
-	static final String SAME_MESSAGE_TEMPLATE = "Expected %s to be the same pointer as %s";
-	static final String NOT_SAME_MESSAGE_TEMPLATE = "Expected %s to be a different pointer";
 
 	static final String EQUAL_MESSAGE_TEMPLATE = "Expected %s to be equal to %s";
 	static final String NOT_EQUAL_MESSAGE_TEMPLATE = "Expected %s to not equal %s";
 
-	private final T actual;
+	final T actual;
 
 	private String message;
 
@@ -39,57 +37,28 @@ public final class RequireFaultBuilder<T> {
 		return Optional.ofNullable( message );
 	}
 
-	/** Create a {@link Fault} for {@link Require#isNull()}. */
-	public Fault<AssertionError> isNull() {
-		return build( NULL_MESSAGE_TEMPLATE.formatted( actual ) );
-	}
-
-	/** Create a {@link Fault} for {@link Require#isNotNull()}. */
-	public Fault<AssertionError> isNotNull() {
-		return build( NOT_NULL_MESSAGE_TEMPLATE );
-	}
-
-	/**
-	 * Create a {@link Fault} for {@link Require#isTheSame(Object)}.
-	 * @param expected The expected value
-	 */
-	public Fault<AssertionError> isTheSame( T expected ) {
-		// Integer.toHexString(hashCode())
-		return build( SAME_MESSAGE_TEMPLATE.formatted(
-			toIdentifier( actual ),
-			toIdentifier( expected )
-		) );
-	}
-
-	/** Create a {@link Fault} for {@link Require#isNotTheSame(Object)}. */
-	public Fault<AssertionError> isNotTheSame() {
-		return build( NOT_SAME_MESSAGE_TEMPLATE.formatted(
-			toIdentifier( actual )
-		) );
-	}
-
-	/** Create a {@link Fault} for {@link Require#isEqualTo(Object)}. */
+	/** Create a {@link Fault} for {@link RequirePointer#isEqualTo(Object)}. */
 	public Fault<AssertionError> isEqualTo( T expected ) {
 		return build( EQUAL_MESSAGE_TEMPLATE.formatted( actual, expected ) );
 	}
 
-	/** Create a {@link Fault} for {@link Require#isNotEqualTo(Object)}. */
+	/** Create a {@link Fault} for {@link RequirePointer#isNotEqualTo(Object)}. */
 	public Fault<AssertionError> isNotEqualTo( T expected ) {
 		return build( NOT_EQUAL_MESSAGE_TEMPLATE.formatted( actual, expected ) );
 	}
 
 	/** Set the displayed error message to the default. */
-	public RequireFaultBuilder<T> withDefaultMessage() {
+	public SELF withDefaultMessage() {
 		return withMessage( null );
 	}
 
 	/** Set the displayed error message. */
-	public RequireFaultBuilder<T> withMessage( String message ) {
+	public SELF withMessage( String message ) {
 		this.message = message;
-		return this;
+		return self();
 	}
 
-	private Fault<AssertionError> build( String defaultMessage ) {
+	protected final Fault<AssertionError> build( String defaultMessage ) {
 		return new Fault<>( AssertionError.class, choose( defaultMessage ) );
 	}
 
@@ -97,10 +66,6 @@ public final class RequireFaultBuilder<T> {
 		return message == null ?
 			defaultMessage :
 			CUSTOM_MESSAGE_TEMPLATE.formatted( message, defaultMessage );
-	}
-
-	private String toIdentifier( T value ) {
-		return Integer.toHexString( System.identityHashCode( value ) );
 	}
 
 }

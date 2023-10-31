@@ -12,7 +12,7 @@ import java.util.function.Function;
 
 import static com.herbmarshall.require.RequireFaultBuilder.*;
 
-class RequireFaultBuilderTest {
+abstract class RequireFaultBuilderTest<T, B extends RequireFaultBuilder<T, B>> {
 
 	@Nested
 	class getActual {
@@ -20,10 +20,10 @@ class RequireFaultBuilderTest {
 		@Test
 		void happyPath() {
 			// Arrange
-			String expected = randomString();
-			RequireFaultBuilder<String> builder = new RequireFaultBuilder<>( expected );
+			T expected = randomValue();
+			B builder = initializeFaultBuilder( expected );
 			// Act
-			String output = builder.getActual();
+			T output = builder.getActual();
 			// Assert
 			Assertions.assertSame( expected, output );
 		}
@@ -31,9 +31,9 @@ class RequireFaultBuilderTest {
 		@Test
 		void actual_null() {
 			// Arrange
-			RequireFaultBuilder<String> builder = new RequireFaultBuilder<>( null );
+			B builder = initializeFaultBuilder( null );
 			// Act
-			String output = builder.getActual();
+			T output = builder.getActual();
 			// Assert
 			Assertions.assertNull( output );
 		}
@@ -47,7 +47,7 @@ class RequireFaultBuilderTest {
 		void happyPath() {
 			// Arrange
 			String expected = randomString();
-			RequireFaultBuilder<String> builder = new RequireFaultBuilder<>( randomString() )
+			B builder = initializeFaultBuilder( randomValue() )
 				.withMessage( expected );
 			// Act
 			String output = builder.getMessage().orElseThrow();
@@ -58,7 +58,7 @@ class RequireFaultBuilderTest {
 		@Test
 		void message_null() {
 			// Arrange
-			RequireFaultBuilder<String> builder = new RequireFaultBuilder<>( randomString() )
+			B builder = initializeFaultBuilder( randomValue() )
 				.withMessage( null );
 			// Act
 			Optional<String> output = builder.getMessage();
@@ -69,7 +69,7 @@ class RequireFaultBuilderTest {
 		@Test
 		void message_setDefault() {
 			// Arrange
-			RequireFaultBuilder<String> builder = new RequireFaultBuilder<>( randomString() )
+			B builder = initializeFaultBuilder( randomValue() )
 				.withDefaultMessage();
 			// Act
 			Optional<String> output = builder.getMessage();
@@ -80,7 +80,7 @@ class RequireFaultBuilderTest {
 		@Test
 		void message_unset() {
 			// Arrange
-			RequireFaultBuilder<String> builder = new RequireFaultBuilder<>( randomString() );
+			B builder = initializeFaultBuilder( randomValue() );
 			// Act
 			Optional<String> output = builder.getMessage();
 			// Assert
@@ -90,182 +90,13 @@ class RequireFaultBuilderTest {
 	}
 
 	@Nested
-	class isNull {
-
-		@Test
-		void happyPath() {
-			String actual = randomString();
-			test_noParameterBuilder(
-				RequireFaultBuilder::isNull,
-				actual,
-				NULL_MESSAGE_TEMPLATE.formatted( actual )
-			);
-		}
-
-		@Test
-		void actual_null() {
-			test_noParameterBuilder(
-				RequireFaultBuilder::isNull,
-				null,
-				NULL_MESSAGE_TEMPLATE.formatted( ( Object ) null )
-			);
-		}
-
-		@Test
-		void message_provided() {
-			// Arrange
-			String actual = randomString();
-			String message = randomString();
-			test_noParameterBuilder(
-				RequireFaultBuilder::isNull,
-				actual,
-				message,
-				buildCustom( message, NULL_MESSAGE_TEMPLATE.formatted( actual ) )
-			);
-		}
-
-	}
-
-	@Nested
-	class isNotNull {
-
-		@Test
-		void happyPath() {
-			test_noParameterBuilder(
-				RequireFaultBuilder::isNotNull,
-				randomString(),
-				NOT_NULL_MESSAGE_TEMPLATE
-			);
-		}
-
-		@Test
-		void actual_null() {
-			test_noParameterBuilder(
-				RequireFaultBuilder::isNotNull,
-				null,
-				NOT_NULL_MESSAGE_TEMPLATE
-			);
-		}
-
-		@Test
-		void message_provided() {
-			String message = randomString();
-			test_noParameterBuilder(
-				RequireFaultBuilder::isNotNull,
-				randomString(),
-				message,
-				buildCustom( message, NOT_NULL_MESSAGE_TEMPLATE )
-			);
-		}
-
-	}
-
-	@Nested
-	class isTheSame {
-
-		@Test
-		void happyPath() {
-			String actual = randomString();
-			String expectedValue = randomString();
-			test_singleParameterBuilder(
-				RequireFaultBuilder::isTheSame,
-				actual,
-				expectedValue,
-				SAME_MESSAGE_TEMPLATE.formatted(
-					toIdentifier( actual ),
-					toIdentifier( expectedValue )
-				)
-			);
-		}
-
-		@Test
-		void actual_null() {
-			String expectedValue = randomString();
-			test_singleParameterBuilder(
-				RequireFaultBuilder::isTheSame,
-				null,
-				expectedValue,
-				SAME_MESSAGE_TEMPLATE.formatted( 0, toIdentifier( expectedValue ) )
-			);
-		}
-
-		@Test
-		void expected_null() {
-			String actual = randomString();
-			test_singleParameterBuilder(
-				RequireFaultBuilder::isTheSame,
-				actual,
-				null,
-				SAME_MESSAGE_TEMPLATE.formatted( toIdentifier( actual ), 0 )
-			);
-		}
-
-		@Test
-		void message_provided() {
-			String actual = randomString();
-			String expectedValue = randomString();
-			String message = randomString();
-			test_singleParameterBuilder(
-				RequireFaultBuilder::isTheSame,
-				actual,
-				expectedValue,
-				message,
-				buildCustom(
-					message,
-					SAME_MESSAGE_TEMPLATE.formatted(
-						toIdentifier( actual ),
-						toIdentifier( expectedValue )
-					)
-				)
-			);
-		}
-
-	}
-
-	@Nested
-	class isNotTheSame {
-
-		@Test
-		void happyPath() {
-			String actual = randomString();
-			test_noParameterBuilder(
-				RequireFaultBuilder::isNotTheSame,
-				actual,
-				NOT_SAME_MESSAGE_TEMPLATE.formatted( toIdentifier( actual ) )
-			);
-		}
-
-		@Test
-		void actual_null() {
-			test_noParameterBuilder(
-				RequireFaultBuilder::isNotTheSame,
-				null,
-				NOT_SAME_MESSAGE_TEMPLATE.formatted( 0 )
-			);
-		}
-
-		@Test
-		void message_provided() {
-			String actual = randomString();
-			String message = randomString();
-			test_noParameterBuilder(
-				RequireFaultBuilder::isNotTheSame,
-				actual,
-				message,
-				buildCustom( message, NOT_SAME_MESSAGE_TEMPLATE.formatted( toIdentifier( actual ) ) )
-			);
-		}
-
-	}
-
-	@Nested
 	class isEqualTo {
 
 		@Test
 		void happyPath() {
-			String actual = randomString();
-			String expectedValue = randomString();
-			test_singleParameterBuilder(
+			T actual = randomValue();
+			T expectedValue = randomValue();
+			testBuilder(
 				RequireFaultBuilder::isEqualTo,
 				actual,
 				expectedValue,
@@ -275,8 +106,8 @@ class RequireFaultBuilderTest {
 
 		@Test
 		void actual_null() {
-			String expectedValue = randomString();
-			test_singleParameterBuilder(
+			T expectedValue = randomValue();
+			testBuilder(
 				RequireFaultBuilder::isEqualTo,
 				null,
 				expectedValue,
@@ -286,8 +117,8 @@ class RequireFaultBuilderTest {
 
 		@Test
 		void expected_null() {
-			String actual = randomString();
-			test_singleParameterBuilder(
+			T actual = randomValue();
+			testBuilder(
 				RequireFaultBuilder::isEqualTo,
 				actual,
 				null,
@@ -297,10 +128,10 @@ class RequireFaultBuilderTest {
 
 		@Test
 		void message_provided() {
-			String actual = randomString();
-			String expectedValue = randomString();
+			T actual = randomValue();
+			T expectedValue = randomValue();
 			String message = randomString();
-			test_singleParameterBuilder(
+			testBuilder(
 				RequireFaultBuilder::isEqualTo,
 				actual,
 				expectedValue,
@@ -319,9 +150,9 @@ class RequireFaultBuilderTest {
 
 		@Test
 		void happyPath() {
-			String actual = randomString();
-			String expectedValue = randomString();
-			test_singleParameterBuilder(
+			T actual = randomValue();
+			T expectedValue = randomValue();
+			testBuilder(
 				RequireFaultBuilder::isNotEqualTo,
 				actual,
 				expectedValue,
@@ -331,8 +162,8 @@ class RequireFaultBuilderTest {
 
 		@Test
 		void actual_null() {
-			String expectedValue = randomString();
-			test_singleParameterBuilder(
+			T expectedValue = randomValue();
+			testBuilder(
 				RequireFaultBuilder::isNotEqualTo,
 				null,
 				expectedValue,
@@ -342,8 +173,8 @@ class RequireFaultBuilderTest {
 
 		@Test
 		void expected_null() {
-			String actual = randomString();
-			test_singleParameterBuilder(
+			T actual = randomValue();
+			testBuilder(
 				RequireFaultBuilder::isNotEqualTo,
 				actual,
 				null,
@@ -353,10 +184,10 @@ class RequireFaultBuilderTest {
 
 		@Test
 		void message_provided() {
-			String actual = randomString();
-			String expectedValue = randomString();
+			T actual = randomValue();
+			T expectedValue = randomValue();
 			String message = randomString();
-			test_singleParameterBuilder(
+			testBuilder(
 				RequireFaultBuilder::isNotEqualTo,
 				actual,
 				expectedValue,
@@ -370,22 +201,22 @@ class RequireFaultBuilderTest {
 
 	}
 
-	private void test_noParameterBuilder(
-		Function<RequireFaultBuilder<?>, Fault<AssertionError>> method,
-		String actual,
+	protected final void testBuilder(
+		Function<B, Fault<AssertionError>> method,
+		T actual,
 		String errorMessage
 	) {
-		test_noParameterBuilder( method, actual, null, errorMessage );
+		testBuilder( method, actual, null, errorMessage );
 	}
 
-	private void test_noParameterBuilder(
-		Function<RequireFaultBuilder<?>, Fault<AssertionError>> method,
-		String actual,
+	protected final void testBuilder(
+		Function<B, Fault<AssertionError>> method,
+		T actual,
 		String customMessage,
 		String errorMessage
 	) {
 		// Arrange
-		RequireFaultBuilder<String> builder = new RequireFaultBuilder<>( actual )
+		B builder = initializeFaultBuilder( actual )
 			.withMessage( customMessage );
 		// Act
 		Fault<AssertionError> output = method.apply( builder );
@@ -396,24 +227,24 @@ class RequireFaultBuilderTest {
 		);
 	}
 
-	private void test_singleParameterBuilder(
-		BiFunction<RequireFaultBuilder<String>, String, Fault<AssertionError>> function,
-		String actual,
-		String expected,
+	protected final void testBuilder(
+		BiFunction<B, T, Fault<AssertionError>> function,
+		T actual,
+		T expected,
 		String errorMessage
 	) {
-		test_singleParameterBuilder( function, actual, expected, null, errorMessage );
+		testBuilder( function, actual, expected, null, errorMessage );
 	}
 
-	private void test_singleParameterBuilder(
-		BiFunction<RequireFaultBuilder<String>, String, Fault<AssertionError>> function,
-		String actual,
-		String expected,
+	protected final void testBuilder(
+		BiFunction<B, T, Fault<AssertionError>> function,
+		T actual,
+		T expected,
 		String customMessage,
 		String errorMessage
 	) {
 		// Arrange
-		RequireFaultBuilder<String> builder = new RequireFaultBuilder<>( actual )
+		B builder = initializeFaultBuilder( actual )
 			.withMessage( customMessage );
 		// Act
 		Fault<AssertionError> output = function.apply( builder, expected );
@@ -424,16 +255,16 @@ class RequireFaultBuilderTest {
 		);
 	}
 
-	private String randomString() {
-		return UUID.randomUUID().toString();
-	}
-
-	private String buildCustom( String message, String defaultMessage ) {
+	protected final String buildCustom( String message, String defaultMessage ) {
 		return CUSTOM_MESSAGE_TEMPLATE.formatted( message, defaultMessage );
 	}
 
-	private String toIdentifier( Object value ) {
-		return Integer.toHexString( System.identityHashCode( value ) );
+	protected abstract B initializeFaultBuilder( T actual );
+
+	protected abstract T randomValue();
+
+	protected final String randomString() {
+		return UUID.randomUUID().toString();
 	}
 
 }

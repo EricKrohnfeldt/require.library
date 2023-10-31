@@ -1,6 +1,6 @@
 package com.herbmarshall.require;
 
-import com.herbmarshall.fault.Fault;
+import com.herbmarshall.require.tester.RequireTestBuilder;
 import com.herbmarshall.standardPipe.Standard;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Nested;
@@ -9,58 +9,24 @@ import org.junit.jupiter.api.Test;
 import java.io.ByteArrayOutputStream;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.function.BiConsumer;
-import java.util.function.BiFunction;
-import java.util.function.Consumer;
-import java.util.function.Function;
 
-import static com.herbmarshall.require.Require.*;
+import static com.herbmarshall.require.RequirePointer.*;
 
-class RequireTest {
+abstract class RequireTest<T, F extends RequireFaultBuilder<T, F>, R extends Require<T, F, R>> {
 
-	@Test
-	void isNull() {
-		test( Require::isNull, RequireFaultBuilder::isNull )
-			.pass( null )
-			.fault( randomString() );
+	protected final RequireTestBuilder<T, F, R> builder;
+
+	RequireTest( RequireTestBuilder<T, F, R> builder ) {
+		this.builder = builder;
 	}
 
 	@Test
-	void isNotNull() {
-		test( Require::isNotNull, RequireFaultBuilder::isNotNull )
-			.pass( randomString() )
-			.fault( null );
-	}
-
-	@Test
-	void isTheSame() {
-		String actual = randomString();
-		test( Require::isTheSame, RequireFaultBuilder::isTheSame )
+	final void isEqualTo() {
+		T actual = randomValue();
+		T expected = randomValue();
+		builder.test( Require::isEqualTo, RequireFaultBuilder::isEqualTo )
 			.pass( actual, actual )
-			.pass( null, null )
-			.fault( actual, actual + "" )  // Equal, but not same
-			.fault( null, randomString() )
-			.fault( actual, null );
-	}
-
-	@Test
-	void isNotTheSame() {
-		String actual = randomString();
-		test( Require::isNotTheSame, RequireFaultBuilder::isNotTheSame )
-			.pass( actual, actual + "" )  // Equal, but not same
-			.pass( actual, null )
-			.pass( null, randomString() )
-			.fault( actual, actual )
-			.fault( null, null );
-	}
-
-	@Test
-	void isEqualTo() {
-		String actual = randomString();
-		String expected = randomString();
-		test( Require::isEqualTo, RequireFaultBuilder::isEqualTo )
-			.pass( actual, actual )
-			.pass( actual, actual + "" )  // Equal, but not same
+			.pass( actual, checkedCopyValue( actual ) )
 			.pass( null, null )
 			.fault( actual, expected )
 			.fault( null, expected )
@@ -68,48 +34,24 @@ class RequireTest {
 	}
 
 	@Test
-	void isNotEqualTo() {
-		String actual = randomString();
-		String expected = randomString();
-		test( Require::isNotEqualTo, RequireFaultBuilder::isNotEqualTo )
+	final void isNotEqualTo() {
+		T actual = randomValue();
+		T expected = randomValue();
+		builder.test( Require::isNotEqualTo, RequireFaultBuilder::isNotEqualTo )
 			.pass( actual, expected )
 			.pass( null, expected )
 			.pass( actual, null )
 			.fault( actual, actual )
-			.fault( actual, actual + "" )  // Equal, but not same
+			.fault( actual, checkedCopyValue( actual ) )
 			.fault( null, null );
 	}
 
-	private <T> SimpleRequireAssertionTester<T> test(
-		Consumer<Require<T>> thatMethod,
-		Function<RequireFaultBuilder<T>, Fault<AssertionError>> faultMethod
-	) {
-		return new SimpleRequireAssertionTester<>( thatMethod, faultMethod );
-	}
-
-	private <T> RequireAssertionTester<T> test(
-		BiConsumer<Require<T>, T> thatMethod,
-		Function<RequireFaultBuilder<T>, Fault<AssertionError>> faultMethod
-	) {
-		return test(
-			thatMethod,
-			( builder, ignored ) -> faultMethod.apply( builder )
-		);
-	}
-
-	private <T> RequireAssertionTester<T> test(
-		BiConsumer<Require<T>, T> thatMethod,
-		BiFunction<RequireFaultBuilder<T>, T, Fault<AssertionError>> faultMethod
-	) {
-		return new RequireAssertionTester<>( thatMethod, faultMethod );
-	}
-
 	@Test
-	void fail() {
+	final void fail() {
 		// Arrange
 		// Act
 		try {
-			Require.fail();
+			RequirePointer.fail();
 			Assertions.fail();
 		}
 		catch ( AssertionError e ) {
@@ -118,12 +60,12 @@ class RequireTest {
 	}
 
 	@Test
-	void fail_message() {
+	final void fail_message() {
 		// Arrange
 		String message = randomString();
 		// Act
 		try {
-			Require.fail( message );
+			RequirePointer.fail( message );
 			Assertions.fail();
 		}
 		catch ( AssertionError e ) {
@@ -140,7 +82,7 @@ class RequireTest {
 				// Arrange
 				// Act
 				try {
-					Require.todo();
+					RequirePointer.todo();
 					Assertions.fail();
 				}
 				// Assert
@@ -151,15 +93,10 @@ class RequireTest {
 		}
 
 		@Test
-		@SuppressWarnings( "Convert2MethodRef" )
 		void preliminary() {
-			temporarilySetSystemValue( TODO_ENVIRONMENT_VARIABLE_VALUE, () -> {
-				// Arrange
-				// Act
-				Require.todo();
-				// Assert
-				// Does not throw
-			} );
+			temporarilySetSystemValue( TODO_ENVIRONMENT_VARIABLE_VALUE, () ->
+				Assertions.assertDoesNotThrow( () -> RequirePointer.todo() )
+			);
 		}
 
 	}
@@ -174,7 +111,7 @@ class RequireTest {
 				String message = randomString();
 				// Act
 				try {
-					Require.todo( message );
+					RequirePointer.todo( message );
 					Assertions.fail();
 				}
 				// Assert
@@ -189,10 +126,10 @@ class RequireTest {
 			temporarilySetSystemValue( TODO_ENVIRONMENT_VARIABLE_VALUE, () -> {
 				// Arrange
 				String message = randomString();
-				// Act
-				Require.todo( message );
-				// Assert
-				// Does not throw
+				// Act / Assert
+				Assertions.assertDoesNotThrow(
+					() -> RequirePointer.todo( message )
+				);
 			} );
 		}
 
@@ -208,7 +145,7 @@ class RequireTest {
 			String expected = randomString();
 			ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 			Standard.err.override( buffer );
-			Require<String> require = Require.that( actual );
+			RequirePointer<String> require = RequirePointer.that( actual );
 			// Act
 			try {
 				require.isEqualTo( expected );
@@ -216,7 +153,7 @@ class RequireTest {
 			}
 			// Assert
 			catch ( AssertionError e ) {
-				Require.fault( actual ).isEqualTo( expected ).validate( e );
+				RequirePointer.fault( actual ).isEqualTo( expected ).validate( e );
 			}
 			finally {
 				Standard.err.reset();
@@ -233,8 +170,8 @@ class RequireTest {
 			Standard.err.override( buffer );
 			String diff = randomString();
 			DiffGeneratorStub generator = new DiffGeneratorStub( diff );
-			Require.setDiffGenerator( generator );
-			Require<String> require = Require.that( actual );
+			RequirePointer.setDiffGenerator( generator );
+			RequirePointer<String> require = RequirePointer.that( actual );
 			// Act
 			try {
 				require.isEqualTo( expected );
@@ -242,11 +179,11 @@ class RequireTest {
 			}
 			// Assert
 			catch ( AssertionError e ) {
-				Require.fault( actual ).isEqualTo( expected ).validate( e );
+				RequirePointer.fault( actual ).isEqualTo( expected ).validate( e );
 			}
 			finally {
 				Standard.err.reset();
-				Require.setDiffGenerator( null );
+				RequirePointer.setDiffGenerator( null );
 			}
 			Assertions.assertEquals( actual, generator.getActual() );
 			Assertions.assertEquals( expected, generator.getExpected() );
@@ -260,8 +197,8 @@ class RequireTest {
 			String expected = randomString();
 			ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 			Standard.err.override( buffer );
-			Require.setDiffGenerator( null );
-			Require<String> require = Require.that( actual );
+			RequirePointer.setDiffGenerator( null );
+			RequirePointer<String> require = RequirePointer.that( actual );
 			// Act
 			try {
 				require.isEqualTo( expected );
@@ -269,7 +206,7 @@ class RequireTest {
 			}
 			// Assert
 			catch ( AssertionError e ) {
-				Require.fault( actual ).isEqualTo( expected ).validate( e );
+				RequirePointer.fault( actual ).isEqualTo( expected ).validate( e );
 			}
 			finally {
 				Standard.err.reset();
@@ -295,7 +232,18 @@ class RequireTest {
 		}
 	}
 
-	private static String randomString() {
+	protected final T checkedCopyValue( T source ) {
+		T copy = uncheckedCopyValue( source );
+		Assertions.assertNotSame( source, copy );
+		Assertions.assertEquals( source, copy );
+		return copy;
+	}
+
+	protected abstract T randomValue();
+
+	protected abstract T uncheckedCopyValue( T source );
+
+	protected final String randomString() {
 		return UUID.randomUUID().toString();
 	}
 
