@@ -90,6 +90,175 @@ abstract class RequireFaultBuilderTest<T, B extends RequireFaultBuilder<T, B>> {
 	}
 
 	@Nested
+	class isNull {
+
+		@Test
+		void happyPath() {
+			T actual = randomValue();
+			testBuilder(
+				RequireFaultBuilder::isNull,
+				actual,
+				NULL_MESSAGE_TEMPLATE.formatted( actual )
+			);
+		}
+
+		@Test
+		void actual_null() {
+			testBuilder(
+				RequireFaultBuilder::isNull,
+				null,
+				NULL_MESSAGE_TEMPLATE.formatted( ( Object ) null )
+			);
+		}
+
+		@Test
+		void message_provided() {
+			// Arrange
+			T actual = randomValue();
+			String message = randomString();
+			testBuilder(
+				RequireFaultBuilder::isNull,
+				actual,
+				message,
+				buildCustom( message, NULL_MESSAGE_TEMPLATE.formatted( actual ) )
+			);
+		}
+
+	}
+
+	@Nested
+	class isNotNull {
+
+		@Test
+		void happyPath() {
+			testBuilder(
+				RequireFaultBuilder::isNotNull,
+				randomValue(),
+				NOT_NULL_MESSAGE_TEMPLATE
+			);
+		}
+
+		@Test
+		void actual_null() {
+			testBuilder(
+				RequireFaultBuilder::isNotNull,
+				null,
+				NOT_NULL_MESSAGE_TEMPLATE
+			);
+		}
+
+		@Test
+		void message_provided() {
+			String message = randomString();
+			testBuilder(
+				RequireFaultBuilder::isNotNull,
+				randomValue(),
+				message,
+				buildCustom( message, NOT_NULL_MESSAGE_TEMPLATE )
+			);
+		}
+
+	}
+
+	@Nested
+	class isTheSame {
+
+		@Test
+		void happyPath() {
+			T actual = randomValue();
+			T expectedValue = randomValue();
+			testBuilder(
+				RequireFaultBuilder::isTheSame,
+				actual,
+				expectedValue,
+				SAME_MESSAGE_TEMPLATE.formatted(
+					toIdentifier( actual ),
+					toIdentifier( expectedValue )
+				)
+			);
+		}
+
+		@Test
+		void actual_null() {
+			T expectedValue = randomValue();
+			testBuilder(
+				RequireFaultBuilder::isTheSame,
+				null,
+				expectedValue,
+				SAME_MESSAGE_TEMPLATE.formatted( 0, toIdentifier( expectedValue ) )
+			);
+		}
+
+		@Test
+		void expected_null() {
+			T actual = randomValue();
+			testBuilder(
+				RequireFaultBuilder::isTheSame,
+				actual,
+				null,
+				SAME_MESSAGE_TEMPLATE.formatted( toIdentifier( actual ), 0 )
+			);
+		}
+
+		@Test
+		void message_provided() {
+			T actual = randomValue();
+			T expectedValue = randomValue();
+			String message = randomString();
+			testBuilder(
+				RequireFaultBuilder::isTheSame,
+				actual,
+				expectedValue,
+				message,
+				buildCustom(
+					message,
+					SAME_MESSAGE_TEMPLATE.formatted(
+						toIdentifier( actual ),
+						toIdentifier( expectedValue )
+					)
+				)
+			);
+		}
+
+	}
+
+	@Nested
+	class isNotTheSame {
+
+		@Test
+		void happyPath() {
+			T actual = randomValue();
+			testBuilder(
+				RequireFaultBuilder::isNotTheSame,
+				actual,
+				NOT_SAME_MESSAGE_TEMPLATE.formatted( toIdentifier( actual ) )
+			);
+		}
+
+		@Test
+		void actual_null() {
+			testBuilder(
+				RequireFaultBuilder::isNotTheSame,
+				null,
+				NOT_SAME_MESSAGE_TEMPLATE.formatted( 0 )
+			);
+		}
+
+		@Test
+		void message_provided() {
+			T actual = randomValue();
+			String message = randomString();
+			testBuilder(
+				RequireFaultBuilder::isNotTheSame,
+				actual,
+				message,
+				buildCustom( message, NOT_SAME_MESSAGE_TEMPLATE.formatted( toIdentifier( actual ) ) )
+			);
+		}
+
+	}
+
+	@Nested
 	class isEqualTo {
 
 		@Test
@@ -265,6 +434,10 @@ abstract class RequireFaultBuilderTest<T, B extends RequireFaultBuilder<T, B>> {
 
 	protected final String randomString() {
 		return UUID.randomUUID().toString();
+	}
+
+	private String toIdentifier( T value ) {
+		return Integer.toHexString( System.identityHashCode( value ) );
 	}
 
 }

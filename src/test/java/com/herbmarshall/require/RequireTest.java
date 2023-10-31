@@ -21,6 +21,45 @@ abstract class RequireTest<T, F extends RequireFaultBuilder<T, F>, R extends Req
 	}
 
 	@Test
+	final void isNull() {
+		builder.test( Require::isNull, RequireFaultBuilder::isNull )
+			.pass( null )
+			.fault( randomValue() );
+	}
+
+	@Test
+	final void isNotNull() {
+		builder.test( Require::isNotNull, RequireFaultBuilder::isNotNull )
+			.fault( null )
+			.pass( randomValue() );
+	}
+
+	@Test
+	final void isTheSame() {
+		T actual = randomValue();
+		builder.test( Require::isTheSame, RequireFaultBuilder::isTheSame )
+			.pass( actual, actual )
+			.pass( null, null )
+			.fault( actual, checkedCopyValue( actual ) )
+			.fault( null, randomValue() )
+			.fault( actual, null );
+	}
+
+	@Test
+	final void isNotTheSame() {
+		T actual = randomValue();
+		builder.test(
+			Require::isNotTheSame,
+			( faultBuilder, expected ) -> faultBuilder.isNotTheSame()
+		)
+			.pass( actual, checkedCopyValue( actual ) )
+			.pass( actual, null )
+			.pass( null, randomValue() )
+			.fault( actual, actual )
+			.fault( null, null );
+	}
+
+	@Test
 	final void isEqualTo() {
 		T actual = randomValue();
 		T expected = randomValue();
