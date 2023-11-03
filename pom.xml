@@ -4,7 +4,7 @@
 
 	<scm>
 		<developerConnection>scm:git:ssh://git.herb.herbmarshall.com/repository/util/require.library</developerConnection>
-		<tag>HEAD</tag>
+		<tag>require.library-1.1</tag>
 	</scm>
 
 	<parent>
@@ -14,7 +14,7 @@
 	</parent>
 
 	<artifactId>require.library</artifactId>
-	<version>1.1-SNAPSHOT</version>
+	<version>1.1</version>
 	<packaging>jar</packaging>
 
 	<properties>
