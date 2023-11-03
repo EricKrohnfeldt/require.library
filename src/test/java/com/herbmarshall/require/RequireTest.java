@@ -14,9 +14,17 @@ import static com.herbmarshall.require.RequirePointer.*;
 
 abstract class RequireTest<T, F extends RequireFaultBuilder<T, F>, R extends Require<T, F, R>> {
 
+	private static final int RANDOM_EXCEPT_ATTEMPTS = 1000;
+
+	private final boolean singletonMode;
 	protected final RequireTestBuilder<T, F, R> builder;
 
 	RequireTest( RequireTestBuilder<T, F, R> builder ) {
+		this( false, builder );
+	}
+
+	RequireTest( boolean singletonMode, RequireTestBuilder<T, F, R> builder ) {
+		this.singletonMode = singletonMode;
 		this.builder = builder;
 	}
 
@@ -37,52 +45,56 @@ abstract class RequireTest<T, F extends RequireFaultBuilder<T, F>, R extends Req
 	@Test
 	final void isTheSame() {
 		T actual = randomValue();
-		builder.test( Require::isTheSame, RequireFaultBuilder::isTheSame )
+		var tester = builder.test( Require::isTheSame, RequireFaultBuilder::isTheSame )
 			.pass( actual, actual )
 			.pass( null, null )
-			.fault( actual, checkedCopyValue( actual ) )
 			.fault( null, randomValue() )
 			.fault( actual, null );
+		if ( ! singletonMode )
+			tester.fault( actual, checkedCopyValue( actual ) );
 	}
 
 	@Test
 	final void isNotTheSame() {
 		T actual = randomValue();
-		builder.test(
+		var tester = builder.test(
 			Require::isNotTheSame,
 			( faultBuilder, expected ) -> faultBuilder.isNotTheSame()
 		)
-			.pass( actual, checkedCopyValue( actual ) )
 			.pass( actual, null )
 			.pass( null, randomValue() )
 			.fault( actual, actual )
 			.fault( null, null );
+		if ( ! singletonMode )
+			tester.pass( actual, checkedCopyValue( actual ) );
 	}
 
 	@Test
 	final void isEqualTo() {
 		T actual = randomValue();
-		T expected = randomValue();
-		builder.test( Require::isEqualTo, RequireFaultBuilder::isEqualTo )
+		T expected = randomValue( actual );
+		var tester = builder.test( Require::isEqualTo, RequireFaultBuilder::isEqualTo )
 			.pass( actual, actual )
-			.pass( actual, checkedCopyValue( actual ) )
 			.pass( null, null )
 			.fault( actual, expected )
 			.fault( null, expected )
 			.fault( actual, null );
+		if ( ! singletonMode )
+			tester.pass( actual, checkedCopyValue( actual ) );
 	}
 
 	@Test
 	final void isNotEqualTo() {
 		T actual = randomValue();
-		T expected = randomValue();
-		builder.test( Require::isNotEqualTo, RequireFaultBuilder::isNotEqualTo )
+		T expected = randomValue( actual );
+		var tester = builder.test( Require::isNotEqualTo, RequireFaultBuilder::isNotEqualTo )
 			.pass( actual, expected )
 			.pass( null, expected )
 			.pass( actual, null )
 			.fault( actual, actual )
-			.fault( actual, checkedCopyValue( actual ) )
 			.fault( null, null );
+		if ( ! singletonMode )
+			tester.fault( actual, checkedCopyValue( actual ) );
 	}
 
 	@Test
@@ -271,16 +283,25 @@ abstract class RequireTest<T, F extends RequireFaultBuilder<T, F>, R extends Req
 		}
 	}
 
-	protected final T checkedCopyValue( T source ) {
-		T copy = uncheckedCopyValue( source );
-		Assertions.assertNotSame( source, copy );
-		Assertions.assertEquals( source, copy );
+	private T checkedCopyValue( T source ) {
+		T copy = copyValue( source );
+		Assertions.assertNotSame( source, copy, "Copy cannot be the same reference" );
+		Assertions.assertEquals( source, copy, "Copy cannot be the equal" );
 		return copy;
 	}
 
 	protected abstract T randomValue();
 
-	protected abstract T uncheckedCopyValue( T source );
+	protected final T randomValue( T except ) {
+		for ( int i = 0; i < RANDOM_EXCEPT_ATTEMPTS; ++i ) {
+			T value = randomValue();
+			if ( !  value.equals( except ) )
+				return value;
+		}
+		throw new AssertionError( "Failed to find random value not equal to " + except );
+	}
+
+	protected abstract T copyValue( T source );
 
 	protected final String randomString() {
 		return UUID.randomUUID().toString();

@@ -12,7 +12,7 @@ import java.util.Optional;
  */
 public abstract sealed class RequireFaultBuilder<T, SELF extends RequireFaultBuilder<T, SELF>>
 	extends SelfTyped<SELF>
-	permits RequirePointerFaultBuilder {
+	permits RequirePointerFaultBuilder, RequireBooleanFaultBuilder {
 
 	static final String CUSTOM_MESSAGE_TEMPLATE = "%s ( %s )";
 

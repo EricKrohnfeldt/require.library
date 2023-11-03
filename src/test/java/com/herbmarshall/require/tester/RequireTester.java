@@ -79,7 +79,7 @@ public final class RequireTester<T, F extends RequireFaultBuilder<T, F>, R exten
 		// Act
 		try {
 			assertMethod.accept( require, expected );
-			Assertions.fail();
+			Assertions.fail( "Expected method to fail, it did not" );
 		}
 		// Assert
 		catch ( AssertionError e ) {

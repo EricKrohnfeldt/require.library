@@ -19,7 +19,7 @@ class RequirePointerTest extends RequireTest<UUID, RequirePointerFaultBuilder<UU
 	}
 
 	@Override
-	protected UUID uncheckedCopyValue( UUID source ) {
+	protected UUID copyValue( UUID source ) {
 		return UUID.fromString( source.toString() );
 	}
 

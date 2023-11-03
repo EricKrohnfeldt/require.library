@@ -13,7 +13,7 @@ import java.util.Objects;
  */
 public abstract sealed class Require<T, F extends RequireFaultBuilder<T, F>, SELF extends Require<T, F, SELF>>
 	extends SelfTyped<SELF>
-	permits RequirePointer {
+	permits RequirePointer, RequireBoolean {
 
 	static final String SETUP_DIFF_MESSAGE = "No diff generated, please set DiffGenerator";
 	private static final DiffGenerator defaultDiffGen = new NoopDiffGenerator( SETUP_DIFF_MESSAGE );
@@ -135,11 +135,20 @@ public abstract sealed class Require<T, F extends RequireFaultBuilder<T, F>, SEL
 	/**
 	 * Create a {@link Require} for specific data.
 	 * @param actual The data to evaluate
-	 * @return A new {@link Require} instance
+	 * @return A new {@link RequirePointer} instance
 	 * @param <T> The type of value to operate on
 	 */
 	public static <T> RequirePointer<T> that( T actual ) {
 		return new RequirePointer<>( actual );
+	}
+
+	/**
+	 * Create a {@link Require} for specific {@link Boolean} data.
+	 * @param actual The {@link Boolean} to evaluate
+	 * @return A new {@link RequireBoolean} instance
+	 */
+	public static RequireBoolean that( Boolean actual ) {
+		return new RequireBoolean( actual );
 	}
 
 	/**
@@ -150,6 +159,15 @@ public abstract sealed class Require<T, F extends RequireFaultBuilder<T, F>, SEL
 	 */
 	public static <T> RequirePointerFaultBuilder<T> fault( T actual ) {
 		return new RequirePointerFaultBuilder<>( actual );
+	}
+
+	/**
+	 * Create a {@link RequireBooleanFaultBuilder} for specific {@link Boolean} data.
+	 * @param actual The {@link Boolean} to evaluate
+	 * @return A new {@link RequirePointerFaultBuilder} instance
+	 */
+	public static RequireBooleanFaultBuilder fault( Boolean actual ) {
+		return new RequireBooleanFaultBuilder( actual );
 	}
 
 	/**
