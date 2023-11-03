@@ -1,13 +1,12 @@
 package com.herbmarshall.require;
 
 import com.herbmarshall.require.tester.RequireTestBuilder;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-abstract non-sealed class RequireTest<T, F extends RequireFaultBuilder<T, F>, R extends Require<T, F, R>>
+abstract non-sealed class SingletonRequireTest<T, F extends RequireFaultBuilder<T, F>, R extends Require<T, F, R>>
 	extends BaseRequireTest<T, F, R> {
 
-	RequireTest( RequireTestBuilder<T, F, R> builder ) {
+	SingletonRequireTest( RequireTestBuilder<T, F, R> builder ) {
 		super( builder );
 	}
 
@@ -19,8 +18,7 @@ abstract non-sealed class RequireTest<T, F extends RequireFaultBuilder<T, F>, R 
 			.pass( actual, actual )
 			.pass( null, null )
 			.fault( null, randomValue() )
-			.fault( actual, null )
-			.fault( actual, checkedCopyValue( actual ) );
+			.fault( actual, null );
 	}
 
 	@Test
@@ -34,8 +32,7 @@ abstract non-sealed class RequireTest<T, F extends RequireFaultBuilder<T, F>, R 
 			.pass( actual, null )
 			.pass( null, randomValue() )
 			.fault( actual, actual )
-			.fault( null, null )
-			.pass( actual, checkedCopyValue( actual ) );
+			.fault( null, null );
 	}
 
 	@Test
@@ -48,8 +45,7 @@ abstract non-sealed class RequireTest<T, F extends RequireFaultBuilder<T, F>, R 
 			.pass( null, null )
 			.fault( actual, expected )
 			.fault( null, expected )
-			.fault( actual, null )
-			.pass( actual, checkedCopyValue( actual ) );
+			.fault( actual, null );
 	}
 
 	@Test
@@ -62,17 +58,7 @@ abstract non-sealed class RequireTest<T, F extends RequireFaultBuilder<T, F>, R 
 			.pass( null, expected )
 			.pass( actual, null )
 			.fault( actual, actual )
-			.fault( null, null )
-			.fault( actual, checkedCopyValue( actual ) );
+			.fault( null, null );
 	}
-
-	private T checkedCopyValue( T source ) {
-		T copy = copyValue( source );
-		Assertions.assertNotSame( source, copy, "Copy cannot be the same reference" );
-		Assertions.assertEquals( source, copy, "Copy cannot be the equal" );
-		return copy;
-	}
-
-	protected abstract T copyValue( T source );
 
 }

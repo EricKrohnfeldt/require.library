@@ -5,10 +5,10 @@ import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
 
-class RequireBooleanTest extends RequireTest<Boolean, RequireBooleanFaultBuilder, RequireBoolean> {
+class RequireBooleanTest extends SingletonRequireTest<Boolean, RequireBooleanFaultBuilder, RequireBoolean> {
 
 	RequireBooleanTest() {
-		super( true, RequireTestBuilder.with(
+		super( RequireTestBuilder.with(
 			Require::that,
 			Require::fault
 		) );
@@ -33,12 +33,6 @@ class RequireBooleanTest extends RequireTest<Boolean, RequireBooleanFaultBuilder
 	@Override
 	protected Boolean randomValue() {
 		return Instant.now().getNano() % 2 == 0;
-	}
-
-	@Override
-	@SuppressWarnings( { "UnnecessaryBoxing", "UnnecessaryUnboxing" } )
-	protected Boolean copyValue( Boolean source ) {
-		return Boolean.valueOf( source.booleanValue() );
 	}
 
 }
