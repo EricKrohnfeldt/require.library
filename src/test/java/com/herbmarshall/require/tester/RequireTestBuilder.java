@@ -5,10 +5,9 @@ import com.herbmarshall.require.Require;
 import com.herbmarshall.require.RequireFaultBuilder;
 
 import java.util.Objects;
-import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
-import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.UnaryOperator;
 
 /**
  * Factory to build tests for {@link Require} subclasses.
@@ -36,7 +35,7 @@ public final class RequireTestBuilder<T, F extends RequireFaultBuilder<T, F>, R 
 	 * @return a new {@link SimpleRequireTester}
 	 */
 	public SimpleRequireTester<T, F, R> test(
-		Consumer<R> assertMethod,
+		UnaryOperator<R> assertMethod,
 		Function<F, Fault<AssertionError>> errorMethod
 	) {
 		return new SimpleRequireTester<>( thatMethod, faultMethod, assertMethod, errorMethod );
@@ -49,7 +48,7 @@ public final class RequireTestBuilder<T, F extends RequireFaultBuilder<T, F>, R 
 	 * @return a new {@link RequireTester}
 	 */
 	public RequireTester<T, F, R> test(
-		BiConsumer<R, T> assertMethod,
+		BiFunction<R, T, R> assertMethod,
 		BiFunction<F, T, Fault<AssertionError>> errorMethod
 	) {
 		return new RequireTester<>( thatMethod, faultMethod, assertMethod, errorMethod );

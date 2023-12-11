@@ -7,8 +7,8 @@ import org.junit.jupiter.api.Assertions;
 
 import java.util.Objects;
 import java.util.UUID;
-import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.UnaryOperator;
 
 /**
  * A tester for 'actual only' ( no expected ) {@link Require} methods.
@@ -21,13 +21,13 @@ public final class SimpleRequireTester<T, F extends RequireFaultBuilder<T, F>, R
 	private final Function<T, R> thatMethod;
 	private final Function<T, F> faultMethod;
 
-	private final Consumer<R> assertMethod;
+	private final UnaryOperator<R> assertMethod;
 	private final Function<F, Fault<AssertionError>> errorMethod;
 
 	SimpleRequireTester(
 		Function<T, R> thatMethod,
 		Function<T, F> faultMethod,
-		Consumer<R> assertMethod,
+		UnaryOperator<R> assertMethod,
 		Function<F, Fault<AssertionError>> errorMethod
 	) {
 		this.thatMethod = Objects.requireNonNull( thatMethod );
@@ -44,10 +44,10 @@ public final class SimpleRequireTester<T, F extends RequireFaultBuilder<T, F>, R
 	public SimpleRequireTester<T, F, R> pass( T actual ) {
 		// Arrange
 		R require = thatMethod.apply( actual );
-		// Act / Assert
-		Assertions.assertDoesNotThrow(
-			() -> assertMethod.accept( require )
-		);
+		// Act
+		R self = assertMethod.apply( require );
+		// Assert
+		Assertions.assertSame( require, self );
 		return this;
 	}
 
@@ -73,7 +73,7 @@ public final class SimpleRequireTester<T, F extends RequireFaultBuilder<T, F>, R
 		// Arrange
 		// Act
 		try {
-			assertMethod.accept( require );
+			assertMethod.apply( require );
 			Assertions.fail();
 		}
 		// Assert

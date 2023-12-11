@@ -33,47 +33,56 @@ public abstract sealed class Require<T, F extends RequireFaultBuilder<T, F>, SEL
 
 	/**
 	 * Will check {@code value} for {@code null} condition.
+	 * @return A self reference
 	 * @throws AssertionError if {@code value} IS {@code null}
 	 */
-	public final void isNull() {
+	public final SELF isNull() {
 		if ( actual != null )
 			throw new AssertionError( fault.isNull().getMessage() );
+		return self();
 	}
 
 	/**
 	 * Will check {@code value} for {@code null} condition.
+	 * @return A self reference
 	 * @throws AssertionError if {@code value} is NOT {@code null}
 	 */
-	public final void isNotNull() {
+	public final SELF isNotNull() {
 		if ( actual == null )
 			throw new AssertionError( fault.isNotNull().getMessage() );
+		return self();
 	}
 
 	/**
 	 * Will check that {@code expected} is the same pointer as {@code actual}.
+	 * @return A self reference
 	 * @throws AssertionError if {@code expected} is NOT the same pointer as {@code actual}
 	 */
-	public final void isTheSame( T expected ) {
+	public final SELF isTheSame( T expected ) {
 		if ( actual != expected )
 			throw new AssertionError( fault.isTheSame( expected ).getMessage() );
+		return self();
 	}
 
 	/**
 	 * Will check that {@code expected} is the same pointer as {@code actual}.
+	 * @return A self reference
 	 * @throws AssertionError if {@code expected} IS the same pointer as {@code actual}
 	 */
-	public final void isNotTheSame( T expected ) {
+	public final SELF isNotTheSame( T expected ) {
 		if ( actual == expected )
 			throw new AssertionError( fault.isNotTheSame().getMessage() );
+		return self();
 	}
 
 	/**
 	 * Will check that {@code expected} is equal to {@code actual}.
 	 * Based on the {@link Object#equals(Object)} method.
 	 * On failure, {@link DiffGenerator} will generate a diff and print it to {@link Standard#err}
+	 * @return A self reference
 	 * @throws AssertionError if {@code expected} is NOT equal to {@code actual}
 	 */
-	public final void isEqualTo( T expected ) {
+	public final SELF isEqualTo( T expected ) {
 		if ( ! checkEqual( expected ) ) {
 			Standard.err.println( diffGen.diff( actual, expected ) );
 			throw new AssertionError( fault.isEqualTo( expected ).getMessage() );
@@ -83,6 +92,7 @@ public abstract sealed class Require<T, F extends RequireFaultBuilder<T, F>, SEL
 //			isArrayEqual( message, ( Object[] ) expected, ( Object[] ) actual );
 //		else
 //			isObjectEqual( message, expected, actual );
+		return self();
 	}
 
 //	private void isObjectEqual( String message, T expected, T actual ) {
@@ -108,11 +118,13 @@ public abstract sealed class Require<T, F extends RequireFaultBuilder<T, F>, SEL
 	/**
 	 * Will check that {@code expected} is equal to {@code actual}.
 	 * Based on the {@link Object#equals(Object)} method.
+	 * @return A self reference
 	 * @throws AssertionError if {@code expected} is equal to {@code actual}
 	 */
-	public final void isNotEqualTo( T expected ) {
+	public final SELF isNotEqualTo( T expected ) {
 		if ( checkEqual( expected ) )
 			throw new AssertionError( fault.isNotEqualTo( expected ).getMessage() );
+		return self();
 	}
 
 	private boolean checkEqual( T expected ) {

@@ -7,7 +7,6 @@ import org.junit.jupiter.api.Assertions;
 
 import java.util.Objects;
 import java.util.UUID;
-import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
@@ -22,13 +21,13 @@ public final class RequireTester<T, F extends RequireFaultBuilder<T, F>, R exten
 	private final Function<T, R> thatMethod;
 	private final Function<T, F> faultMethod;
 
-	private final BiConsumer<R, T> assertMethod;
+	private final BiFunction<R, T, R> assertMethod;
 	private final BiFunction<F, T, Fault<AssertionError>> errorMethod;
 
 	RequireTester(
 		Function<T, R> thatMethod,
 		Function<T, F> faultMethod,
-		BiConsumer<R, T> assertMethod,
+		BiFunction<R, T, R> assertMethod,
 		BiFunction<F, T, Fault<AssertionError>> errorMethod
 	) {
 		this.thatMethod = Objects.requireNonNull( thatMethod );
@@ -46,10 +45,10 @@ public final class RequireTester<T, F extends RequireFaultBuilder<T, F>, R exten
 	public RequireTester<T, F, R> pass( T actual, T expected ) {
 		// Arrange
 		R require = thatMethod.apply( actual );
-		// Act / Assert
-		Assertions.assertDoesNotThrow(
-			() -> assertMethod.accept( require, expected )
-		);
+		// Act
+		R self = assertMethod.apply( require, expected );
+		// Assert
+		Assertions.assertSame( require, self );
 		return this;
 	}
 
@@ -78,7 +77,7 @@ public final class RequireTester<T, F extends RequireFaultBuilder<T, F>, R exten
 		// Arrange
 		// Act
 		try {
-			assertMethod.accept( require, expected );
+			assertMethod.apply( require, expected );
 			Assertions.fail( "Expected method to fail, it did not" );
 		}
 		// Assert
