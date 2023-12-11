@@ -161,14 +161,14 @@ abstract class RequireFaultBuilderTest<T, B extends RequireFaultBuilder<T, B>> {
 	}
 
 	@Nested
-	class isTheSame {
+	class isTheSameAs {
 
 		@Test
 		void happyPath() {
 			T actual = randomValue();
 			T expectedValue = randomValue();
 			testBuilder(
-				RequireFaultBuilder::isTheSame,
+				RequireFaultBuilder::isTheSameAs,
 				actual,
 				expectedValue,
 				SAME_MESSAGE_TEMPLATE.formatted(
@@ -182,7 +182,7 @@ abstract class RequireFaultBuilderTest<T, B extends RequireFaultBuilder<T, B>> {
 		void actual_null() {
 			T expectedValue = randomValue();
 			testBuilder(
-				RequireFaultBuilder::isTheSame,
+				RequireFaultBuilder::isTheSameAs,
 				null,
 				expectedValue,
 				SAME_MESSAGE_TEMPLATE.formatted( 0, toIdentifier( expectedValue ) )
@@ -193,7 +193,7 @@ abstract class RequireFaultBuilderTest<T, B extends RequireFaultBuilder<T, B>> {
 		void expected_null() {
 			T actual = randomValue();
 			testBuilder(
-				RequireFaultBuilder::isTheSame,
+				RequireFaultBuilder::isTheSameAs,
 				actual,
 				null,
 				SAME_MESSAGE_TEMPLATE.formatted( toIdentifier( actual ), 0 )
@@ -206,7 +206,7 @@ abstract class RequireFaultBuilderTest<T, B extends RequireFaultBuilder<T, B>> {
 			T expectedValue = randomValue();
 			String message = randomString();
 			testBuilder(
-				RequireFaultBuilder::isTheSame,
+				RequireFaultBuilder::isTheSameAs,
 				actual,
 				expectedValue,
 				message,
@@ -223,13 +223,13 @@ abstract class RequireFaultBuilderTest<T, B extends RequireFaultBuilder<T, B>> {
 	}
 
 	@Nested
-	class isNotTheSame {
+	class isNotTheSameAs {
 
 		@Test
 		void happyPath() {
 			T actual = randomValue();
 			testBuilder(
-				RequireFaultBuilder::isNotTheSame,
+				RequireFaultBuilder::isNotTheSameAs,
 				actual,
 				NOT_SAME_MESSAGE_TEMPLATE.formatted( toIdentifier( actual ) )
 			);
@@ -238,7 +238,7 @@ abstract class RequireFaultBuilderTest<T, B extends RequireFaultBuilder<T, B>> {
 		@Test
 		void actual_null() {
 			testBuilder(
-				RequireFaultBuilder::isNotTheSame,
+				RequireFaultBuilder::isNotTheSameAs,
 				null,
 				NOT_SAME_MESSAGE_TEMPLATE.formatted( 0 )
 			);
@@ -249,7 +249,7 @@ abstract class RequireFaultBuilderTest<T, B extends RequireFaultBuilder<T, B>> {
 			T actual = randomValue();
 			String message = randomString();
 			testBuilder(
-				RequireFaultBuilder::isNotTheSame,
+				RequireFaultBuilder::isNotTheSameAs,
 				actual,
 				message,
 				buildCustom( message, NOT_SAME_MESSAGE_TEMPLATE.formatted( toIdentifier( actual ) ) )

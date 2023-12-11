@@ -12,9 +12,9 @@ abstract non-sealed class SingletonRequireTest<T, F extends RequireFaultBuilder<
 
 	@Test
 	@Override
-	final void isTheSame() {
+	final void isTheSameAs() {
 		T actual = randomValue();
-		builder.test( Require::isTheSame, RequireFaultBuilder::isTheSame )
+		builder.test( Require::isTheSameAs, RequireFaultBuilder::isTheSameAs )
 			.pass( actual, actual )
 			.pass( null, null )
 			.fault( null, randomValue() )
@@ -23,11 +23,11 @@ abstract non-sealed class SingletonRequireTest<T, F extends RequireFaultBuilder<
 
 	@Test
 	@Override
-	final void isNotTheSame() {
+	final void isNotTheSameAs() {
 		T actual = randomValue();
 		builder.test(
-			Require::isNotTheSame,
-			( faultBuilder, expected ) -> faultBuilder.isNotTheSame()
+			Require::isNotTheSameAs,
+			( faultBuilder, expected ) -> faultBuilder.isNotTheSameAs()
 		)
 			.pass( actual, null )
 			.pass( null, randomValue() )

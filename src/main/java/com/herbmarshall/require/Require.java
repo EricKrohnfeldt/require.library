@@ -58,9 +58,9 @@ public abstract sealed class Require<T, F extends RequireFaultBuilder<T, F>, SEL
 	 * @return A self reference
 	 * @throws AssertionError if {@code expected} is NOT the same pointer as {@code actual}
 	 */
-	public final SELF isTheSame( T expected ) {
+	public final SELF isTheSameAs( T expected ) {
 		if ( actual != expected )
-			throw new AssertionError( fault.isTheSame( expected ).getMessage() );
+			throw new AssertionError( fault.isTheSameAs( expected ).getMessage() );
 		return self();
 	}
 
@@ -69,9 +69,9 @@ public abstract sealed class Require<T, F extends RequireFaultBuilder<T, F>, SEL
 	 * @return A self reference
 	 * @throws AssertionError if {@code expected} IS the same pointer as {@code actual}
 	 */
-	public final SELF isNotTheSame( T expected ) {
+	public final SELF isNotTheSameAs( T expected ) {
 		if ( actual == expected )
-			throw new AssertionError( fault.isNotTheSame().getMessage() );
+			throw new AssertionError( fault.isNotTheSameAs().getMessage() );
 		return self();
 	}
 

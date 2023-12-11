@@ -54,18 +54,18 @@ public abstract sealed class RequireFaultBuilder<T, SELF extends RequireFaultBui
 	}
 
 	/**
-	 * Create a {@link Fault} for {@link RequirePointer#isTheSame(Object)}.
+	 * Create a {@link Fault} for {@link RequirePointer#isTheSameAs(Object)}.
 	 * @param expected The expected value
 	 */
-	public final Fault<AssertionError> isTheSame( T expected ) {
+	public final Fault<AssertionError> isTheSameAs( T expected ) {
 		return build( SAME_MESSAGE_TEMPLATE.formatted(
 			toIdentifier( actual ),
 			toIdentifier( expected )
 		) );
 	}
 
-	/** Create a {@link Fault} for {@link RequirePointer#isNotTheSame(Object)}. */
-	public final Fault<AssertionError> isNotTheSame() {
+	/** Create a {@link Fault} for {@link RequirePointer#isNotTheSameAs(Object)}. */
+	public final Fault<AssertionError> isNotTheSameAs() {
 		return build( NOT_SAME_MESSAGE_TEMPLATE.formatted(
 			toIdentifier( actual )
 		) );

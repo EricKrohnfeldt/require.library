@@ -37,8 +37,8 @@ abstract sealed class BaseRequireTest<T, F extends RequireFaultBuilder<T, F>, R 
 			.pass( randomValue() );
 	}
 
-	abstract void isTheSame();
-	abstract void isNotTheSame();
+	abstract void isTheSameAs();
+	abstract void isNotTheSameAs();
 
 	abstract void isEqualTo();
 	abstract void isNotEqualTo();
