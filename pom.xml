@@ -22,12 +22,10 @@
 		<util.major>   1   </util.major>
 
 		<fault.minor>           2   </fault.minor>
-		<javaExtension.minor>   0   </javaExtension.minor>
+		<javaExtension.minor>   1   </javaExtension.minor>
 
 		<fault.version>                   ${util.major}.${fault.minor}   </fault.version>
 		<javaExtension.version>   ${util.major}.${javaExtension.minor}   </javaExtension.version>
-
-		<junit.version>   5.9.3   </junit.version>
 
 	</properties>
 
@@ -43,13 +41,6 @@
 			<groupId>com.herbmarshall</groupId>
 			<artifactId>javaExtension.library</artifactId>
 			<version>${javaExtension.version}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.junit.jupiter</groupId>
-			<artifactId>junit-jupiter</artifactId>
-			<version>${junit.version}</version>
-			<scope>test</scope>
 		</dependency>
 
 	</dependencies>
