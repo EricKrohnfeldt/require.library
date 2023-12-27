@@ -5,7 +5,9 @@ public interface DiffGenerator {
 
 	/**
 	 * Create a text representation of an object diff.
-	 * @implNote Must handle null values
+	 * <b>Must handle null values for both {@code actual} and {@code expected}</b>
+	 * @param actual The value to evaluate
+	 * @param expected The value to compare to
 	 */
 	String diff( Object actual, Object expected );
 

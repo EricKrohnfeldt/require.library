@@ -144,6 +144,21 @@ public abstract sealed class Require<T, F extends RequireFaultBuilder<T, F>, SEL
 		return self();
 	}
 
+	/** @return The {@code actual} pointer */
+	public T done() {
+		return actual;
+	}
+
+	/**
+	 * For fast in-line null checking.
+	 * @param value The data to evaluate
+	 * @return value reference
+	 * @param <T> The type of value
+	 */
+	public static <T> T notNull( T value ) {
+		return Require.that( value ).isNotNull().done();
+	}
+
 	/**
 	 * Create a {@link Require} for specific data.
 	 * @param actual The data to evaluate
@@ -222,7 +237,7 @@ public abstract sealed class Require<T, F extends RequireFaultBuilder<T, F>, SEL
 
 	/**
 	 * Set the {@link DiffGenerator} to use when {@link Require#isEqualTo(Object)} fails.
-	 * @param diffGenerator The {@link DiffGenerator} to use.  {@link null} value will set to default
+	 * @param diffGenerator The {@link DiffGenerator} to use.  {@code null} value will set to default
 	 */
 	public static void setDiffGenerator( DiffGenerator diffGenerator ) {
 		Require.diffGen = Objects.requireNonNullElse( diffGenerator, defaultDiffGen );
