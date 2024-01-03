@@ -1,5 +1,6 @@
 package com.herbmarshall.require;
 
+import com.herbmarshall.fault.Fault;
 import com.herbmarshall.javaExtension.SelfTyped;
 import com.herbmarshall.standardPipe.Standard;
 
@@ -157,6 +158,14 @@ public abstract sealed class Require<T, F extends RequireFaultBuilder<T, F>, SEL
 	 */
 	public static <T> T notNull( T value ) {
 		return Require.that( value ).isNotNull().done();
+	}
+
+	/**
+	 * For fast in-line null check {@link Fault}.
+	 * @return An {@link AssertionError} {@link Fault}
+	 */
+	public static Fault<AssertionError> notNullFault() {
+		return Require.fault( null ).isNotNull();
 	}
 
 	/**

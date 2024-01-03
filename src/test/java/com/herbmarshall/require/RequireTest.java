@@ -1,5 +1,6 @@
 package com.herbmarshall.require;
 
+import com.herbmarshall.fault.Fault;
 import com.herbmarshall.require.tester.RequireTestBuilder;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Nested;
@@ -118,6 +119,16 @@ abstract non-sealed class RequireTest<T, F extends RequireFaultBuilder<T, F>, R 
 			Assertions.assertSame( original, output );
 		}
 
+	}
+
+	@Test
+	void nonNullFault() {
+		// Arrange
+		// Act
+		Fault<AssertionError> output = Require.notNullFault();
+		// Assert
+		Fault<AssertionError> expected = Require.fault( null ).isNotNull();
+		Assertions.assertEquals( expected, output );
 	}
 
 	private T checkedCopyValue( T source ) {
