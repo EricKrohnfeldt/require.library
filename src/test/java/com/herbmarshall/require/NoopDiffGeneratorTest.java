@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.UUID;
 
-class NoopDiffGeneratorTest {
+final class NoopDiffGeneratorTest {
 
 	@Test
 	void diff() {

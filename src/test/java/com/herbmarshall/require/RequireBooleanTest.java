@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
 
-class RequireBooleanTest extends SingletonRequireTest<Boolean, RequireBooleanFaultBuilder, RequireBoolean> {
+final class RequireBooleanTest extends SingletonRequireTest<Boolean, RequireBooleanFaultBuilder, RequireBoolean> {
 
 	RequireBooleanTest() {
 		super( RequireTestBuilder.with(
@@ -15,7 +15,7 @@ class RequireBooleanTest extends SingletonRequireTest<Boolean, RequireBooleanFau
 	}
 
 	@Test
-	final void isTrue() {
+	void isTrue() {
 		builder.test( RequireBoolean::isTrue, RequireBooleanFaultBuilder::isTrue )
 			.pass( true )
 			.fault( false )
@@ -23,7 +23,7 @@ class RequireBooleanTest extends SingletonRequireTest<Boolean, RequireBooleanFau
 	}
 
 	@Test
-	final void isFalse() {
+	void isFalse() {
 		builder.test( RequireBoolean::isFalse, RequireBooleanFaultBuilder::isFalse )
 			.pass( false )
 			.fault( true )

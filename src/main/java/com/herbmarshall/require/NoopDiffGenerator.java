@@ -3,7 +3,7 @@ package com.herbmarshall.require;
 import java.util.Objects;
 
 /** The default {@link DiffGenerator} which does nothing. */
-class NoopDiffGenerator implements DiffGenerator {
+final class NoopDiffGenerator implements DiffGenerator {
 
 	private final String message;
 

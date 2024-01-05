@@ -1,6 +1,6 @@
 package com.herbmarshall.require;
 
-class DiffGeneratorStub implements DiffGenerator {
+final class DiffGeneratorStub implements DiffGenerator {
 
 	private final String output;
 

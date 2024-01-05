@@ -4,7 +4,7 @@ import com.herbmarshall.require.tester.RequireTestBuilder;
 
 import java.util.UUID;
 
-class RequirePointerTest extends RequireTest<UUID, RequirePointerFaultBuilder<UUID>, RequirePointer<UUID>> {
+final class RequirePointerTest extends RequireTest<UUID, RequirePointerFaultBuilder<UUID>, RequirePointer<UUID>> {
 
 	RequirePointerTest() {
 		super( RequireTestBuilder.with(
