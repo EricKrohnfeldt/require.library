@@ -4,6 +4,7 @@ import com.herbmarshall.fault.Fault;
 import com.herbmarshall.javaExtension.SelfTyped;
 import com.herbmarshall.standardPipe.Standard;
 
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -14,7 +15,10 @@ import java.util.Objects;
  */
 public abstract sealed class Require<T, F extends RequireFaultBuilder<T, F>, SELF extends Require<T, F, SELF>>
 	extends SelfTyped<SELF>
-	permits RequirePointer, RequireBoolean {
+	permits
+		RequirePointer,
+		RequireList,
+		RequireBoolean {
 
 	static final String SETUP_DIFF_MESSAGE = "No diff generated, please set DiffGenerator";
 	private static final DiffGenerator defaultDiffGen = new NoopDiffGenerator( SETUP_DIFF_MESSAGE );
@@ -165,7 +169,7 @@ public abstract sealed class Require<T, F extends RequireFaultBuilder<T, F>, SEL
 	 * @return An {@link AssertionError} {@link Fault}
 	 */
 	public static Fault<AssertionError> notNullFault() {
-		return Require.fault( null ).isNotNull();
+		return Require.fault( ( Object ) null ).isNotNull();
 	}
 
 	/**
@@ -176,6 +180,16 @@ public abstract sealed class Require<T, F extends RequireFaultBuilder<T, F>, SEL
 	 */
 	public static <T> RequirePointer<T> that( T actual ) {
 		return new RequirePointer<>( actual );
+	}
+
+	/**
+	 * Create a {@link Require} for specific {@link List} data.
+	 * @param actual The {@link List} to evaluate
+	 * @return A new {@link RequireList} instance
+	 * @param <E> The type of element stored in the list
+	 */
+	public static <E> RequireList<E> that( List<E> actual ) {
+		return new RequireList<>( actual );
 	}
 
 	/**
@@ -195,6 +209,16 @@ public abstract sealed class Require<T, F extends RequireFaultBuilder<T, F>, SEL
 	 */
 	public static <T> RequirePointerFaultBuilder<T> fault( T actual ) {
 		return new RequirePointerFaultBuilder<>( actual );
+	}
+
+	/**
+	 * Create a {@link RequireListFaultBuilder} for specific {@link List} data.
+	 * @param actual The {@link List} to evaluate
+	 * @return A new {@link RequireListFaultBuilder} instance
+	 * @param <E> The type of element stored in the list
+	 */
+	public static <E> RequireListFaultBuilder<E> fault( List<E> actual ) {
+		return new RequireListFaultBuilder<>( actual );
 	}
 
 	/**

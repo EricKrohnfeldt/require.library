@@ -105,7 +105,7 @@ abstract non-sealed class RequireTest<T, F extends RequireFaultBuilder<T, F>, R 
 			}
 			// Assert
 			catch ( AssertionError e ) {
-				Require.fault( null ).isNotNull().validate( e );
+				Require.fault( ( Object ) null ).isNotNull().validate( e );
 			}
 		}
 
@@ -127,7 +127,7 @@ abstract non-sealed class RequireTest<T, F extends RequireFaultBuilder<T, F>, R 
 		// Act
 		Fault<AssertionError> output = Require.notNullFault();
 		// Assert
-		Fault<AssertionError> expected = Require.fault( null ).isNotNull();
+		Fault<AssertionError> expected = Require.fault( ( Object ) null ).isNotNull();
 		Assertions.assertEquals( expected, output );
 	}
 
