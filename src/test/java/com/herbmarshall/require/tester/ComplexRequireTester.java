@@ -17,7 +17,8 @@ import java.util.function.Function;
  * @param <F> The type of {@link RequireFaultBuilder} to operate with
  * @param <R> The type of {@link Require} to operate with
  */
-public final class ComplexRequireTester<T, C, F extends RequireFaultBuilder<T, F>, R extends Require<T, F, R>> {
+public sealed class ComplexRequireTester<T, C, F extends RequireFaultBuilder<T, F>, R extends Require<T, F, R>>
+	permits RequireTester {
 
 	private final Function<T, R> thatMethod;
 	private final Function<T, F> faultMethod;
