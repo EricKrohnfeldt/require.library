@@ -29,7 +29,7 @@ public final class RequireTestBuilder<T, F extends RequireFaultBuilder<T, F>, R 
 	}
 
 	/**
-	 * Create test for a {@link Require} method.
+	 * Create tests for a {@link Require} method.
 	 * @param assertMethod The {@link Require} method that will perform the assertion
 	 * @param errorMethod The {@link RequireFaultBuilder} method that will produce the {@link Fault}
 	 * @return a new {@link SimpleRequireTester}
@@ -42,7 +42,7 @@ public final class RequireTestBuilder<T, F extends RequireFaultBuilder<T, F>, R 
 	}
 
 	/**
-	 * Create test for a {@link Require} method.
+	 * Create tests for a {@link Require} method.
 	 * @param assertMethod The {@link Require} method that will perform the assertion
 	 * @param errorMethod The {@link RequireFaultBuilder} method that will produce the {@link Fault}
 	 * @return a new {@link RequireTester}
@@ -52,6 +52,19 @@ public final class RequireTestBuilder<T, F extends RequireFaultBuilder<T, F>, R 
 		BiFunction<F, T, Fault<AssertionError>> errorMethod
 	) {
 		return new RequireTester<>( thatMethod, faultMethod, assertMethod, errorMethod );
+	}
+
+	/**
+	 * Create tests for a {@link Require} method.
+	 * @param assertMethod The {@link Require} method that will perform the assertion
+	 * @param errorMethod The {@link RequireFaultBuilder} method that will produce the {@link Fault}
+	 * @return a new {@link ComplexRequireTester}
+	 */
+	public <C> ComplexRequireTester<T, C, F, R> testComplex(
+		BiFunction<R, C, R> assertMethod,
+		BiFunction<F, C, Fault<AssertionError>> errorMethod
+	) {
+		return new ComplexRequireTester<>( thatMethod, faultMethod, assertMethod, errorMethod );
 	}
 
 	/**
