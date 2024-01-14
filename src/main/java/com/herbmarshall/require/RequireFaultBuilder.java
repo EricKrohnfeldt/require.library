@@ -19,14 +19,14 @@ public abstract sealed class RequireFaultBuilder<T, SELF extends RequireFaultBui
 
 	static final String CUSTOM_MESSAGE_TEMPLATE = "%s ( %s )";
 
-	static final String NULL_MESSAGE_TEMPLATE = "Required null, but found %s";
+	static final String NULL_MESSAGE_TEMPLATE = "Required null, but found '%s'";
 	static final String NOT_NULL_MESSAGE_TEMPLATE = "Required pointer, but found null";
 
-	static final String SAME_MESSAGE_TEMPLATE = "Expected %s to be the same pointer as %s";
-	static final String NOT_SAME_MESSAGE_TEMPLATE = "Expected %s to be a different pointer";
+	static final String SAME_MESSAGE_TEMPLATE = "Expected '%s' to be the same pointer as '%s'";
+	static final String NOT_SAME_MESSAGE_TEMPLATE = "Expected '%s' to be a different pointer";
 
-	static final String EQUAL_MESSAGE_TEMPLATE = "Expected %s to be equal to %s";
-	static final String NOT_EQUAL_MESSAGE_TEMPLATE = "Expected %s to not equal %s";
+	static final String EQUAL_MESSAGE_TEMPLATE = "Expected '%s' to be equal to '%s'";
+	static final String NOT_EQUAL_MESSAGE_TEMPLATE = "Expected '%s' to not equal '%s'";
 
 	final T actual;
 
