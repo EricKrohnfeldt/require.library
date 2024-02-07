@@ -12,12 +12,12 @@ public final class RequireBooleanFaultBuilder extends RequireFaultBuilder<Boolea
 		super( actual );
 	}
 
-	/** Create a {@link Fault} for {@link RequirePointer#isNull()}. */
+	/** Create a {@link Fault} for {@link RequireBoolean#isTrue()}. */
 	public Fault<AssertionError> isTrue() {
 		return build( TRUE_MESSAGE_TEMPLATE.formatted( actual ) );
 	}
 
-	/** Create a {@link Fault} for {@link RequirePointer#isNotNull()}. */
+	/** Create a {@link Fault} for {@link RequireBoolean#isFalse()}. */
 	public Fault<AssertionError> isFalse() {
 		return build( FALSE_MESSAGE_TEMPLATE.formatted( actual ) );
 	}
