@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.function.Supplier;
 
 /**
- * Module to provide data assertions for {@link Boolean} values.
+ * Module to provide data assertions for {@link List} values.
  * @param <E> The {@link List} element type
  */
 public final class RequireList<E>
@@ -15,9 +15,9 @@ public final class RequireList<E>
 	}
 
 	/**
-	 * Will check {@code value} for a mutable state.
+	 * Will check {@code actual} for a mutable state.
 	 * @return A self reference
-	 * @throws AssertionError if {@code value} is immutable
+	 * @throws AssertionError if {@code actual} is immutable
 	 */
 	public RequireList<E> isMutable( Supplier<E> elementSupplier ) {
 		Require.notNull( actual );
@@ -42,9 +42,9 @@ public final class RequireList<E>
 	}
 
 	/**
-	 * Will check {@code value} for an immutable state.
+	 * Will check {@code actual} for an immutable state.
 	 * @return A self reference
-	 * @throws AssertionError if {@code value} is mutable
+	 * @throws AssertionError if {@code actual} is mutable
 	 */
 	public RequireList<E> isImmutable( Supplier<E> elementSupplier ) {
 		Require.notNull( actual );

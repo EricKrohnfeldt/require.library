@@ -37,9 +37,9 @@ public abstract sealed class Require<T, F extends RequireFaultBuilder<T, F>, SEL
 	}
 
 	/**
-	 * Will check {@code value} for {@code null} condition.
+	 * Will check {@code actual} for {@code null} condition.
 	 * @return A self reference
-	 * @throws AssertionError if {@code value} IS {@code null}
+	 * @throws AssertionError if {@code actual} IS {@code null}
 	 */
 	public final SELF isNull() {
 		if ( actual != null )
@@ -48,9 +48,9 @@ public abstract sealed class Require<T, F extends RequireFaultBuilder<T, F>, SEL
 	}
 
 	/**
-	 * Will check {@code value} for {@code null} condition.
+	 * Will check {@code actual} for {@code null} condition.
 	 * @return A self reference
-	 * @throws AssertionError if {@code value} is NOT {@code null}
+	 * @throws AssertionError if {@code actual} is NOT {@code null}
 	 */
 	public final SELF isNotNull() {
 		if ( actual == null )
@@ -186,7 +186,7 @@ public abstract sealed class Require<T, F extends RequireFaultBuilder<T, F>, SEL
 	 * Create a {@link Require} for specific {@link List} data.
 	 * @param actual The {@link List} to evaluate
 	 * @return A new {@link RequireList} instance
-	 * @param <E> The type of element stored in the list
+	 * @param <E> The type of element stored in the {@link List}
 	 */
 	public static <E> RequireList<E> that( List<E> actual ) {
 		return new RequireList<>( actual );
@@ -215,7 +215,7 @@ public abstract sealed class Require<T, F extends RequireFaultBuilder<T, F>, SEL
 	 * Create a {@link RequireListFaultBuilder} for specific {@link List} data.
 	 * @param actual The {@link List} to evaluate
 	 * @return A new {@link RequireListFaultBuilder} instance
-	 * @param <E> The type of element stored in the list
+	 * @param <E> The type of element stored in the {@link List}
 	 */
 	public static <E> RequireListFaultBuilder<E> fault( List<E> actual ) {
 		return new RequireListFaultBuilder<>( actual );
