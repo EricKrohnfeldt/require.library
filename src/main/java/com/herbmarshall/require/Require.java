@@ -6,6 +6,7 @@ import com.herbmarshall.standardPipe.Standard;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * Module to provide data assertions.
@@ -16,9 +17,10 @@ import java.util.Objects;
 public abstract sealed class Require<T, F extends RequireFaultBuilder<T, F>, SELF extends Require<T, F, SELF>>
 	extends SelfTyped<SELF>
 	permits
+		RequireBoolean,
 		RequirePointer,
-		RequireList,
-		RequireBoolean {
+		RequireOptional,
+		RequireList {
 
 	static final String SETUP_DIFF_MESSAGE = "No diff generated, please set DiffGenerator";
 	private static final DiffGenerator defaultDiffGen = new NoopDiffGenerator( SETUP_DIFF_MESSAGE );
@@ -43,7 +45,7 @@ public abstract sealed class Require<T, F extends RequireFaultBuilder<T, F>, SEL
 	 */
 	public final SELF isNull() {
 		if ( actual != null )
-			throw new AssertionError( fault.isNull().getMessage() );
+			throw fault.isNull().build();
 		return self();
 	}
 
@@ -54,7 +56,7 @@ public abstract sealed class Require<T, F extends RequireFaultBuilder<T, F>, SEL
 	 */
 	public final SELF isNotNull() {
 		if ( actual == null )
-			throw new AssertionError( fault.isNotNull().getMessage() );
+			throw fault.isNotNull().build();
 		return self();
 	}
 
@@ -65,7 +67,7 @@ public abstract sealed class Require<T, F extends RequireFaultBuilder<T, F>, SEL
 	 */
 	public final SELF isTheSameAs( T expected ) {
 		if ( actual != expected )
-			throw new AssertionError( fault.isTheSameAs( expected ).getMessage() );
+			throw fault.isTheSameAs( expected ).build();
 		return self();
 	}
 
@@ -76,7 +78,7 @@ public abstract sealed class Require<T, F extends RequireFaultBuilder<T, F>, SEL
 	 */
 	public final SELF isNotTheSameAs( T expected ) {
 		if ( actual == expected )
-			throw new AssertionError( fault.isNotTheSameAs().getMessage() );
+			throw fault.isNotTheSameAs().build();
 		return self();
 	}
 
@@ -90,7 +92,7 @@ public abstract sealed class Require<T, F extends RequireFaultBuilder<T, F>, SEL
 	public final SELF isEqualTo( T expected ) {
 		if ( ! checkEqual( expected ) ) {
 			Standard.err.println( diffGen.diff( actual, expected ) );
-			throw new AssertionError( fault.isEqualTo( expected ).getMessage() );
+			throw fault.isEqualTo( expected ).build();
 		}
 //		Objects.requireNonNull( message );
 //		if ( expected != null && expected.getClass().isArray() )
@@ -128,7 +130,7 @@ public abstract sealed class Require<T, F extends RequireFaultBuilder<T, F>, SEL
 	 */
 	public final SELF isNotEqualTo( T expected ) {
 		if ( checkEqual( expected ) )
-			throw new AssertionError( fault.isNotEqualTo( expected ).getMessage() );
+			throw fault.isNotEqualTo( expected ).build();
 		return self();
 	}
 
@@ -173,6 +175,15 @@ public abstract sealed class Require<T, F extends RequireFaultBuilder<T, F>, SEL
 	}
 
 	/**
+	 * Create a {@link Require} for specific {@link Boolean} data.
+	 * @param actual The {@link Boolean} to evaluate
+	 * @return A new {@link RequireBoolean} instance
+	 */
+	public static RequireBoolean that( Boolean actual ) {
+		return new RequireBoolean( actual );
+	}
+
+	/**
 	 * Create a {@link Require} for specific data.
 	 * @param actual The data to evaluate
 	 * @return A new {@link RequirePointer} instance
@@ -180,6 +191,17 @@ public abstract sealed class Require<T, F extends RequireFaultBuilder<T, F>, SEL
 	 */
 	public static <T> RequirePointer<T> that( T actual ) {
 		return new RequirePointer<>( actual );
+	}
+
+	/**
+	 * Create a {@link Require} for specific {@link Optional} data.
+	 * @param actual The {@link Optional} to evaluate
+	 * @return A new {@link RequireOptional} instance
+	 * @param <E> The type of element stored in the {@link Optional}
+	 */
+	@SuppressWarnings( "OptionalUsedAsFieldOrParameterType" )
+	public static <E> RequireOptional<E> that( Optional<E> actual ) {
+		return new RequireOptional<>( actual );
 	}
 
 	/**
@@ -193,12 +215,12 @@ public abstract sealed class Require<T, F extends RequireFaultBuilder<T, F>, SEL
 	}
 
 	/**
-	 * Create a {@link Require} for specific {@link Boolean} data.
+	 * Create a {@link RequireBooleanFaultBuilder} for specific {@link Boolean} data.
 	 * @param actual The {@link Boolean} to evaluate
-	 * @return A new {@link RequireBoolean} instance
+	 * @return A new {@link RequirePointerFaultBuilder} instance
 	 */
-	public static RequireBoolean that( Boolean actual ) {
-		return new RequireBoolean( actual );
+	public static RequireBooleanFaultBuilder fault( Boolean actual ) {
+		return new RequireBooleanFaultBuilder( actual );
 	}
 
 	/**
@@ -212,6 +234,17 @@ public abstract sealed class Require<T, F extends RequireFaultBuilder<T, F>, SEL
 	}
 
 	/**
+	 * Create a {@link RequireOptionalFaultBuilder} for specific {@link Optional} data.
+	 * @param actual The {@link Optional} to evaluate
+	 * @return A new {@link RequireOptionalFaultBuilder} instance
+	 * @param <E> The type of element stored in the {@link Optional}
+	 */
+	@SuppressWarnings( "OptionalUsedAsFieldOrParameterType" )
+	public static <E> RequireOptionalFaultBuilder<E> fault( Optional<E> actual ) {
+		return new RequireOptionalFaultBuilder<>( actual );
+	}
+
+	/**
 	 * Create a {@link RequireListFaultBuilder} for specific {@link List} data.
 	 * @param actual The {@link List} to evaluate
 	 * @return A new {@link RequireListFaultBuilder} instance
@@ -219,15 +252,6 @@ public abstract sealed class Require<T, F extends RequireFaultBuilder<T, F>, SEL
 	 */
 	public static <E> RequireListFaultBuilder<E> fault( List<E> actual ) {
 		return new RequireListFaultBuilder<>( actual );
-	}
-
-	/**
-	 * Create a {@link RequireBooleanFaultBuilder} for specific {@link Boolean} data.
-	 * @param actual The {@link Boolean} to evaluate
-	 * @return A new {@link RequirePointerFaultBuilder} instance
-	 */
-	public static RequireBooleanFaultBuilder fault( Boolean actual ) {
-		return new RequireBooleanFaultBuilder( actual );
 	}
 
 	/**

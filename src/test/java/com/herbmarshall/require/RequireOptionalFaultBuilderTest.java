@@ -8,7 +8,8 @@ import java.util.UUID;
 
 import static com.herbmarshall.require.RequireOptionalFaultBuilder.*;
 
-final class RequireOptionalFaultBuilderTest extends RequireFaultBuilderTest<Optional<Object>, RequireOptionalFaultBuilder<Object>> {
+final class RequireOptionalFaultBuilderTest
+	extends RequireFaultBuilderTest<Optional<Object>, RequireOptionalFaultBuilder<Object>> {
 
 	@Nested
 	class isPresent {

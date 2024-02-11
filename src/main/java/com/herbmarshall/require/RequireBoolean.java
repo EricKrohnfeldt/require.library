@@ -9,24 +9,24 @@ public final class RequireBoolean
 	}
 
 	/**
-	 * Will check {@code value} for {@code true} condition.
+	 * Will check {@code actual} for {@code true} condition.
 	 * @return A self reference
-	 * @throws AssertionError if {@code value} is {@code false} or {@code null}
+	 * @throws AssertionError if {@code actual} is {@code false} or {@code null}
 	 */
 	public RequireBoolean isTrue() {
 		if ( actual == null || ! actual )
-			throw new AssertionError( fault.isTrue().getMessage() );
+			throw fault.isTrue().build();
 		return self();
 	}
 
 	/**
-	 * Will check {@code value} for {@code false} condition.
+	 * Will check {@code actual} for {@code false} condition.
 	 * @return A self reference
-	 * @throws AssertionError if {@code value} is {@code true} or {@code null}
+	 * @throws AssertionError if {@code actual} is {@code true} or {@code null}
 	 */
 	public RequireBoolean isFalse() {
 		if ( actual == null || actual )
-			throw new AssertionError( fault.isFalse().getMessage() );
+			throw fault.isFalse().build();
 		return self();
 	}
 

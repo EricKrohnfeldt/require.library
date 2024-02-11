@@ -21,7 +21,7 @@
 
 		<util.major>   1   </util.major>
 
-		<fault.minor>           3   </fault.minor>
+		<fault.minor>          13   </fault.minor>
 		<javaExtension.minor>   1   </javaExtension.minor>
 
 		<fault.version>                   ${util.major}.${fault.minor}   </fault.version>

@@ -36,7 +36,7 @@ public final class RequireList<E>
 			}
 		}
 		catch ( UnsupportedOperationException e ) {
-			throw new AssertionError( fault.isMutable().getMessage(), e );
+			throw fault.isMutable().build( e );
 		}
 		return self();
 	}
@@ -55,9 +55,10 @@ public final class RequireList<E>
 		try {
 			if ( isPresent ) actual.remove( element );
 			else actual.add( element );
-			throw new AssertionError( fault.isImmutable().getMessage() );
+			throw fault.isImmutable().build();
 		}
 		catch ( UnsupportedOperationException e ) {
+			System.out.println( e.getMessage() );
 			// Pass
 		}
 		return self();
