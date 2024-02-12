@@ -5,7 +5,6 @@ import com.herbmarshall.require.Require;
 import com.herbmarshall.require.RequireFaultBuilder;
 
 import java.util.function.BiFunction;
-import java.util.function.Function;
 
 /**
  * A tester for 'actual / expected' {@link Require} methods.
@@ -17,12 +16,11 @@ public final class RequireTester<T, F extends RequireFaultBuilder<T, F>, R exten
 	extends ComplexRequireTester<T, T, F, R> {
 
 	RequireTester(
-		Function<T, R> thatMethod,
-		Function<T, F> faultMethod,
+		RequireTestBuilder<T, F, R> builder,
 		BiFunction<R, T, R> assertMethod,
 		BiFunction<F, T, Fault<AssertionError>> errorMethod
 	) {
-		super( thatMethod, faultMethod, assertMethod, errorMethod );
+		super( builder, assertMethod, errorMethod );
 	}
 
 	/**

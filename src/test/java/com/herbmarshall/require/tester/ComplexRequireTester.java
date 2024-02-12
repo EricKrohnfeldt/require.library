@@ -8,7 +8,6 @@ import org.junit.jupiter.api.Assertions;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.function.BiFunction;
-import java.util.function.Function;
 
 /**
  * A tester for 'actual / condition' {@link Require} methods.
@@ -20,20 +19,17 @@ import java.util.function.Function;
 public sealed class ComplexRequireTester<T, C, F extends RequireFaultBuilder<T, F>, R extends Require<T, F, R>>
 	permits RequireTester {
 
-	private final Function<T, R> thatMethod;
-	private final Function<T, F> faultMethod;
+	private final RequireTestBuilder<T, F, R> builder;
 
 	private final BiFunction<R, C, R> assertMethod;
 	private final BiFunction<F, C, Fault<AssertionError>> errorMethod;
 
 	ComplexRequireTester(
-		Function<T, R> thatMethod,
-		Function<T, F> faultMethod,
+		RequireTestBuilder<T, F, R> builder,
 		BiFunction<R, C, R> assertMethod,
 		BiFunction<F, C, Fault<AssertionError>> errorMethod
 	) {
-		this.thatMethod = Objects.requireNonNull( thatMethod );
-		this.faultMethod = Objects.requireNonNull( faultMethod );
+		this.builder = Objects.requireNonNull( builder );
 		this.assertMethod = Objects.requireNonNull( assertMethod );
 		this.errorMethod = Objects.requireNonNull( errorMethod );
 	}
@@ -46,7 +42,7 @@ public sealed class ComplexRequireTester<T, C, F extends RequireFaultBuilder<T, 
 	 */
 	public ComplexRequireTester<T, C, F, R> pass( T actual, C condition ) {
 		// Arrange
-		R require = thatMethod.apply( actual );
+		R require = builder.that( actual );
 		// Act
 		R self = assertMethod.apply( require, condition );
 		// Assert
@@ -63,18 +59,18 @@ public sealed class ComplexRequireTester<T, C, F extends RequireFaultBuilder<T, 
 	public ComplexRequireTester<T, C, F, R> fault( T actual, C condition ) {
 		fault(
 			condition,
-			thatMethod.apply( actual ).withDefaultMessage(),
+			builder.that( actual ).withDefaultMessage(),
 			errorMethod.apply(
-				faultMethod.apply( actual ).withDefaultMessage(),
+				builder.fault( actual ).withDefaultMessage(),
 				condition
 			)
 		);
 		String message = randomString();
 		fault(
 			condition,
-			thatMethod.apply( actual ).withMessage( message ),
+			builder.that( actual ).withMessage( message ),
 			errorMethod.apply(
-				faultMethod.apply( actual ).withMessage( message ),
+				builder.fault( actual ).withMessage( message ),
 				condition
 			)
 		);
@@ -91,7 +87,7 @@ public sealed class ComplexRequireTester<T, C, F extends RequireFaultBuilder<T, 
 	public ComplexRequireTester<T, C, F, R> fault( T actual, C condition, Fault<AssertionError> fault ) {
 		fault(
 			condition,
-			thatMethod.apply( actual ),
+			builder.that( actual ),
 			fault
 		);
 		return this;

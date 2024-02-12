@@ -28,6 +28,17 @@ public final class RequireTestBuilder<T, F extends RequireFaultBuilder<T, F>, R 
 		this.faultMethod = Objects.requireNonNull( faultMethod );
 	}
 
+
+	/** Proxy for the specified {@link Require} {@code that} method. */
+	public R that( T actual ) {
+		return thatMethod.apply( actual );
+	}
+
+	/** Proxy for the specified {@link Require} {@code fault} method. */
+	public F fault( T actual ) {
+		return faultMethod.apply( actual );
+	}
+
 	/**
 	 * Create tests for a {@link Require} method.
 	 * @param assertMethod The {@link Require} method that will perform the assertion
@@ -38,7 +49,7 @@ public final class RequireTestBuilder<T, F extends RequireFaultBuilder<T, F>, R 
 		UnaryOperator<R> assertMethod,
 		Function<F, Fault<AssertionError>> errorMethod
 	) {
-		return new SimpleRequireTester<>( thatMethod, faultMethod, assertMethod, errorMethod );
+		return new SimpleRequireTester<>( this, assertMethod, errorMethod );
 	}
 
 	/**
@@ -51,7 +62,7 @@ public final class RequireTestBuilder<T, F extends RequireFaultBuilder<T, F>, R 
 		BiFunction<R, T, R> assertMethod,
 		BiFunction<F, T, Fault<AssertionError>> errorMethod
 	) {
-		return new RequireTester<>( thatMethod, faultMethod, assertMethod, errorMethod );
+		return new RequireTester<>( this, assertMethod, errorMethod );
 	}
 
 	/**
@@ -64,7 +75,7 @@ public final class RequireTestBuilder<T, F extends RequireFaultBuilder<T, F>, R 
 		BiFunction<R, C, R> assertMethod,
 		BiFunction<F, C, Fault<AssertionError>> errorMethod
 	) {
-		return new ComplexRequireTester<>( thatMethod, faultMethod, assertMethod, errorMethod );
+		return new ComplexRequireTester<>( this, assertMethod, errorMethod );
 	}
 
 	/**

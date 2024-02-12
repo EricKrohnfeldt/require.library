@@ -18,20 +18,17 @@ import java.util.function.UnaryOperator;
  */
 public final class SimpleRequireTester<T, F extends RequireFaultBuilder<T, F>, R extends Require<T, F, R>> {
 
-	private final Function<T, R> thatMethod;
-	private final Function<T, F> faultMethod;
+	private final RequireTestBuilder<T, F, R> builder;
 
 	private final UnaryOperator<R> assertMethod;
 	private final Function<F, Fault<AssertionError>> errorMethod;
 
 	SimpleRequireTester(
-		Function<T, R> thatMethod,
-		Function<T, F> faultMethod,
+		RequireTestBuilder<T, F, R> builder,
 		UnaryOperator<R> assertMethod,
 		Function<F, Fault<AssertionError>> errorMethod
 	) {
-		this.thatMethod = Objects.requireNonNull( thatMethod );
-		this.faultMethod = Objects.requireNonNull( faultMethod );
+		this.builder = Objects.requireNonNull( builder );
 		this.assertMethod = Objects.requireNonNull( assertMethod );
 		this.errorMethod = Objects.requireNonNull( errorMethod );
 	}
@@ -43,7 +40,7 @@ public final class SimpleRequireTester<T, F extends RequireFaultBuilder<T, F>, R
 	 */
 	public SimpleRequireTester<T, F, R> pass( T actual ) {
 		// Arrange
-		R require = thatMethod.apply( actual );
+		R require = builder.that( actual );
 		// Act
 		R self = assertMethod.apply( require );
 		// Assert
@@ -58,13 +55,13 @@ public final class SimpleRequireTester<T, F extends RequireFaultBuilder<T, F>, R
 	 */
 	public SimpleRequireTester<T, F, R> fault( T actual ) {
 		fault(
-			thatMethod.apply( actual ).withDefaultMessage(),
-			faultMethod.apply( actual ).withDefaultMessage()
+			builder.that( actual ).withDefaultMessage(),
+			builder.fault( actual ).withDefaultMessage()
 		);
 		String message = randomString();
 		fault(
-			thatMethod.apply( actual ).withMessage( message ),
-			faultMethod.apply( actual ).withMessage( message )
+			builder.that( actual ).withMessage( message ),
+			builder.fault( actual ).withMessage( message )
 		);
 		return this;
 	}
