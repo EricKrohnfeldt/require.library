@@ -20,7 +20,7 @@ public abstract sealed class Require<T, F extends RequireFaultBuilder<T, F>, SEL
 		RequireBoolean,
 		RequirePointer,
 		RequireOptional,
-		RequireList {
+		RequireCollection {
 
 	static final String SETUP_DIFF_MESSAGE = "No diff generated, please set DiffGenerator";
 	private static final DiffGenerator defaultDiffGen = new NoopDiffGenerator( SETUP_DIFF_MESSAGE );

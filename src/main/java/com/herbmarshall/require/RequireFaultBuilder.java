@@ -16,7 +16,7 @@ public abstract sealed class RequireFaultBuilder<T, SELF extends RequireFaultBui
 		RequireBooleanFaultBuilder,
 		RequirePointerFaultBuilder,
 		RequireOptionalFaultBuilder,
-		RequireListFaultBuilder {
+		RequireCollectionFaultBuilder {
 
 	static final String CUSTOM_MESSAGE_TEMPLATE = "%s ( %s )";
 
