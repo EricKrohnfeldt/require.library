@@ -17,8 +17,7 @@ public abstract sealed class RequireCollectionFaultBuilder<
 		SELF extends RequireFaultBuilder<C, SELF>
 	>
 	extends RequireFaultBuilder<C, SELF>
-	permits
-		RequireListFaultBuilder {
+	permits RequireListFaultBuilder, RequireSetFaultBuilder {
 
 	static final String MUTABLE_MESSAGE_TEMPLATE = "Required %s to be mutable, but is immutable";
 	static final String IMMUTABLE_MESSAGE_TEMPLATE = "Required %s to be immutable, but is mutable";

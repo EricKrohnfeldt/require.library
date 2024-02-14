@@ -7,6 +7,7 @@ import com.herbmarshall.standardPipe.Standard;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * Module to provide data assertions.
@@ -215,6 +216,16 @@ public abstract sealed class Require<T, F extends RequireFaultBuilder<T, F>, SEL
 	}
 
 	/**
+	 * Create a {@link Require} for specific {@link Set} data.
+	 * @param actual The {@link Set} to evaluate
+	 * @return A new {@link RequireSet} instance
+	 * @param <E> The type of element stored in the {@link Set}
+	 */
+	public static <E> RequireSet<E> that( Set<E> actual ) {
+		return new RequireSet<>( actual );
+	}
+
+	/**
 	 * Create a {@link RequireBooleanFaultBuilder} for specific {@link Boolean} data.
 	 * @param actual The {@link Boolean} to evaluate
 	 * @return A new {@link RequirePointerFaultBuilder} instance
@@ -252,6 +263,16 @@ public abstract sealed class Require<T, F extends RequireFaultBuilder<T, F>, SEL
 	 */
 	public static <E> RequireListFaultBuilder<E> fault( List<E> actual ) {
 		return new RequireListFaultBuilder<>( actual );
+	}
+
+	/**
+	 * Create a {@link RequireSetFaultBuilder} for specific {@link Set} data.
+	 * @param actual The {@link Set} to evaluate
+	 * @return A new {@link RequireSetFaultBuilder} instance
+	 * @param <E> The type of element stored in the {@link Set}
+	 */
+	public static <E> RequireSetFaultBuilder<E> fault( Set<E> actual ) {
+		return new RequireSetFaultBuilder<>( actual );
 	}
 
 	/**

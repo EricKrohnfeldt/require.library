@@ -20,7 +20,7 @@ public abstract sealed class RequireCollection<
 		SELF extends Require<C, F, SELF>
 	>
 	extends Require<C, F, SELF>
-	permits RequireList {
+	permits RequireList, RequireSet {
 
 	RequireCollection( C actual, F fault ) {
 		super( actual, fault );
