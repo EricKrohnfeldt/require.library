@@ -17,10 +17,11 @@ final class RequireSetFaultBuilderTest
 
 	@Override
 	protected Set<Object> randomValue() {
-		return Set.of( random(), random(), random() );
+		return Set.of( randomElement(), randomElement(), randomElement() );
 	}
 
-	private Object random() {
+	@Override
+	Object randomElement() {
 		return UUID.randomUUID();
 	}
 

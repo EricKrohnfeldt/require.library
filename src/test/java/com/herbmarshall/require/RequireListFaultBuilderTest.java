@@ -17,10 +17,12 @@ final class RequireListFaultBuilderTest
 
 	@Override
 	protected List<Object> randomValue() {
-		return List.of( random(), random(), random() );
+		return List.of( randomElement(), randomElement(), randomElement() );
 	}
 
-	private Object random() {
+
+	@Override
+	Object randomElement() {
 		return UUID.randomUUID();
 	}
 

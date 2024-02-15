@@ -27,6 +27,36 @@ public abstract sealed class RequireCollection<
 	}
 
 	/**
+	 * Checks if {@code element} is contained within {@code actual}.
+	 * @param element The value to check for containment.
+	 * @return A self reference
+	 * @throws AssertionError if {@code actual} does not contain {@code element}
+	 * @throws AssertionError if {@code actual} is {@code null}
+	 * @see Collection#contains(Object)
+	 */
+	public SELF contains( E element ) {
+		Require.notNull( actual );
+		if ( actual.contains( element ) )
+			return self();
+		throw fault.contains( element ).build();
+	}
+
+	/**
+	 * Checks if {@code element} is contained within {@code actual}.
+	 * @param element The value to check for containment.
+	 * @return A self reference
+	 * @throws AssertionError if {@code actual} does not contain {@code element}
+	 * @throws AssertionError if {@code actual} is {@code null}
+	 * @see Collection#contains(Object)
+	 */
+	public SELF doesNotContain( E element ) {
+		Require.notNull( actual );
+		if ( actual.contains( element ) )
+			throw fault.doesNotContain( element ).build();
+		return self();
+	}
+
+	/**
 	 * Will check {@code actual} for a mutable state.
 	 * <p><b>Inefficient for very large {@link Collection}</b></p>
 	 * @return A self reference

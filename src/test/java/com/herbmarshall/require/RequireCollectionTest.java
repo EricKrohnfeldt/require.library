@@ -30,6 +30,72 @@ abstract class RequireCollectionTest<
 	abstract Collector<E, ?, C> immutableCollector();
 
 	@Nested
+	class contains {
+
+		@Test
+		void standardTests() {
+			C collection = randomMutable();
+			E contained = randomElement();
+			E nonContained = randomElement();
+			collection.add( contained );
+			builder.<E>test(
+				RequireCollection::contains,
+				RequireCollectionFaultBuilder::contains
+			)
+				.pass( collection, contained )
+				.fault( collection, nonContained )
+				.fault( null, randomElement() );
+		}
+
+		@Test
+		void nullElement() {
+			C hasNull = randomMutable();
+			C noNull = randomMutable();
+			hasNull.add( null );
+			builder.<E>test(
+				RequireCollection::contains,
+				RequireCollectionFaultBuilder::contains
+			)
+				.pass( hasNull, null )
+				.fault( noNull, null );
+		}
+
+	}
+
+	@Nested
+	class doesNotContain {
+
+		@Test
+		void standardTests() {
+			C collection = randomMutable();
+			E contained = randomElement();
+			E nonContained = randomElement();
+			collection.add( contained );
+			builder.<E>test(
+				RequireCollection::doesNotContain,
+				RequireCollectionFaultBuilder::doesNotContain
+			)
+				.pass( collection, nonContained )
+				.fault( collection, contained )
+				.fault( null, randomElement() );
+		}
+
+		@Test
+		void nullElement() {
+			C hasNull = randomMutable();
+			C noNull = randomMutable();
+			hasNull.add( null );
+			builder.<E>test(
+				RequireCollection::doesNotContain,
+				RequireCollectionFaultBuilder::doesNotContain
+			)
+				.pass( noNull, null )
+				.fault( hasNull, null );
+		}
+
+	}
+
+	@Nested
 	class isMutable {
 
 		@Test

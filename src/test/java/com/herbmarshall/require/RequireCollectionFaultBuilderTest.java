@@ -5,6 +5,9 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
 
+import static com.herbmarshall.require.RequireCollectionFaultBuilder.DOES_CONTAIN_TEMPLATE;
+import static com.herbmarshall.require.RequireCollectionFaultBuilder.DOES_NOT_CONTAIN_TEMPLATE;
+import static com.herbmarshall.require.RequireFaultBuilder.NOT_NULL_MESSAGE_TEMPLATE;
 import static com.herbmarshall.require.RequireListFaultBuilder.IMMUTABLE_MESSAGE_TEMPLATE;
 import static com.herbmarshall.require.RequireListFaultBuilder.MUTABLE_MESSAGE_TEMPLATE;
 
@@ -20,6 +23,80 @@ abstract class RequireCollectionFaultBuilderTest<
 
 	RequireCollectionFaultBuilderTest( String collectionTypeName ) {
 		this.collectionTypeName = collectionTypeName;
+	}
+
+	abstract E randomElement();
+
+	@Nested
+	class contains {
+
+		@Test
+		void happyPath() {
+			C actual = randomValue();
+			E element = randomElement();
+			testBuilder(
+				builder -> builder.contains( element ),
+				actual,
+				DOES_CONTAIN_TEMPLATE.formatted( element, actual )
+			);
+		}
+
+		@Test
+		void actual_null() {
+			E element = randomElement();
+			testBuilder(
+				builder -> builder.contains( element ),
+				null,
+				NOT_NULL_MESSAGE_TEMPLATE
+			);
+		}
+
+		@Test
+		void element_null() {
+			C actual = randomValue();
+			testBuilder(
+				builder -> builder.contains( null ),
+				actual,
+				DOES_CONTAIN_TEMPLATE.formatted( null, actual )
+			);
+		}
+
+	}
+
+	@Nested
+	class doesNotContain {
+
+		@Test
+		void happyPath() {
+			C actual = randomValue();
+			E element = randomElement();
+			testBuilder(
+				builder -> builder.doesNotContain( element ),
+				actual,
+				DOES_NOT_CONTAIN_TEMPLATE.formatted( element, actual )
+			);
+		}
+
+		@Test
+		void actual_null() {
+			E element = randomElement();
+			testBuilder(
+				builder -> builder.doesNotContain( element ),
+				null,
+				NOT_NULL_MESSAGE_TEMPLATE
+			);
+		}
+
+		@Test
+		void element_null() {
+			C actual = randomValue();
+			testBuilder(
+				builder -> builder.doesNotContain( null ),
+				actual,
+				DOES_NOT_CONTAIN_TEMPLATE.formatted( null, actual )
+			);
+		}
+
 	}
 
 	@Nested
