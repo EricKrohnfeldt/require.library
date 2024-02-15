@@ -34,7 +34,7 @@ abstract class RequireCollectionTest<
 
 		@Test
 		void standardTests() {
-			builder.<Supplier<E>>testComplex(
+			builder.<Supplier<E>>test(
 				RequireCollection::isMutable,
 				( builder, supplier ) -> builder.isMutable()
 			)
@@ -86,7 +86,7 @@ abstract class RequireCollectionTest<
 
 		@Test
 		void standardTests() {
-			builder.<Supplier<E>>testComplex(
+			builder.<Supplier<E>>test(
 				RequireCollection::isImmutable,
 				( builder, supplier ) -> builder.isImmutable()
 			)
