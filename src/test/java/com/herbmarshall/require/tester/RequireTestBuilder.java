@@ -56,13 +56,13 @@ public final class RequireTestBuilder<T, F extends RequireFaultBuilder<T, F>, R 
 	 * Create tests for a {@link Require} method.
 	 * @param assertMethod The {@link Require} method that will perform the assertion
 	 * @param errorMethod The {@link RequireFaultBuilder} method that will produce the {@link Fault}
-	 * @return a new {@link ComplexRequireTester}
+	 * @return a new {@link SingleParameterRequireTester}
 	 */
-	public <C> ComplexRequireTester<T, C, F, R> test(
+	public <C> SingleParameterRequireTester<T, C, F, R> test(
 		BiFunction<R, C, R> assertMethod,
 		BiFunction<F, C, Fault<AssertionError>> errorMethod
 	) {
-		return new ComplexRequireTester<>( this, assertMethod, errorMethod );
+		return new SingleParameterRequireTester<>( this, assertMethod, errorMethod );
 	}
 
 	/**

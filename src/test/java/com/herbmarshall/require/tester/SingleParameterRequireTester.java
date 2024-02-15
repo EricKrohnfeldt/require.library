@@ -16,15 +16,14 @@ import java.util.function.BiFunction;
  * @param <F> The type of {@link RequireFaultBuilder} to operate with
  * @param <R> The type of {@link Require} to operate with
  */
-public sealed class ComplexRequireTester<T, C, F extends RequireFaultBuilder<T, F>, R extends Require<T, F, R>>
-	permits RequireTester {
+public final class SingleParameterRequireTester<T, C, F extends RequireFaultBuilder<T, F>, R extends Require<T, F, R>> {
 
 	private final RequireTestBuilder<T, F, R> builder;
 
 	private final BiFunction<R, C, R> assertMethod;
 	private final BiFunction<F, C, Fault<AssertionError>> errorMethod;
 
-	ComplexRequireTester(
+	SingleParameterRequireTester(
 		RequireTestBuilder<T, F, R> builder,
 		BiFunction<R, C, R> assertMethod,
 		BiFunction<F, C, Fault<AssertionError>> errorMethod
@@ -40,7 +39,7 @@ public sealed class ComplexRequireTester<T, C, F extends RequireFaultBuilder<T, 
 	 * @param condition The condition use for evaluation
 	 * @return A self reference
 	 */
-	public ComplexRequireTester<T, C, F, R> pass( T actual, C condition ) {
+	public SingleParameterRequireTester<T, C, F, R> pass( T actual, C condition ) {
 		// Arrange
 		R require = builder.that( actual );
 		// Act
@@ -56,7 +55,7 @@ public sealed class ComplexRequireTester<T, C, F extends RequireFaultBuilder<T, 
 	 * @param condition The condition use for evaluation
 	 * @return A self reference
 	 */
-	public ComplexRequireTester<T, C, F, R> fault( T actual, C condition ) {
+	public SingleParameterRequireTester<T, C, F, R> fault( T actual, C condition ) {
 		fault(
 			condition,
 			builder.that( actual ).withDefaultMessage(),
@@ -84,7 +83,7 @@ public sealed class ComplexRequireTester<T, C, F extends RequireFaultBuilder<T, 
 	 * @param fault An alternative {@link Fault} to expect
 	 * @return A self reference
 	 */
-	public ComplexRequireTester<T, C, F, R> fault( T actual, C condition, Fault<AssertionError> fault ) {
+	public SingleParameterRequireTester<T, C, F, R> fault( T actual, C condition, Fault<AssertionError> fault ) {
 		fault(
 			condition,
 			builder.that( actual ),
