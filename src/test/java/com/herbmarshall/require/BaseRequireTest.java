@@ -1,5 +1,6 @@
 package com.herbmarshall.require;
 
+import com.herbmarshall.fault.Fault;
 import com.herbmarshall.require.tester.RequireTestBuilder;
 import com.herbmarshall.standardPipe.Standard;
 import org.junit.jupiter.api.Assertions;
@@ -13,7 +14,7 @@ import java.util.UUID;
 import static com.herbmarshall.require.RequirePointer.*;
 
 abstract sealed class BaseRequireTest<T, F extends RequireFaultBuilder<T, F>, R extends Require<T, F, R>>
-	permits RequireTest, SingletonRequireTest {
+	permits RequireTest, IdentityEqualsRequireTest {
 
 	private static final int RANDOM_EXCEPT_ATTEMPTS = 1000;
 
@@ -211,6 +212,69 @@ abstract sealed class BaseRequireTest<T, F extends RequireFaultBuilder<T, F>, R 
 			Assertions.assertEquals( SETUP_DIFF_MESSAGE + "\n", buffer.toString() );
 		}
 
+	}
+
+	@Nested
+	class done {
+
+		@Test
+		void happyPath() {
+			// Arrange
+			T value = randomValue();
+			// Act
+			T output = Require.that( value ).done();
+			// Assert
+			Assertions.assertSame( value, output );
+		}
+
+		@Test
+		void nullActual() {
+			// Arrange
+			// Act
+			T output = Require.that( ( T ) null ).done();
+			// Assert
+			Assertions.assertNull( output );
+		}
+
+	}
+
+	@Nested
+	class notNull {
+
+		@Test
+		void nullValue() {
+			// Arrange
+			// Act
+			try {
+				Require.notNull( null );
+				Assertions.fail();
+			}
+			// Assert
+			catch ( AssertionError e ) {
+				Require.fault( ( Object ) null ).isNotNull().validate( e );
+			}
+		}
+
+		@Test
+		void notNullValue() {
+			// Arrange
+			T original = randomValue();
+			// Act
+			T output = Require.notNull( original );
+			// Assert
+			Assertions.assertSame( original, output );
+		}
+
+	}
+
+	@Test
+	final void nonNullFault() {
+		// Arrange
+		// Act
+		Fault<AssertionError> output = Require.notNullFault();
+		// Assert
+		Fault<AssertionError> expected = Require.fault( ( Object ) null ).isNotNull();
+		Assertions.assertEquals( expected, output );
 	}
 
 	private static void temporarilySetSystemValue( String value, Runnable runnable ) {

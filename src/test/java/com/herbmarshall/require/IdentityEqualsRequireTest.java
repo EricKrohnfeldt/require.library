@@ -1,20 +1,20 @@
 package com.herbmarshall.require;
 
 import com.herbmarshall.require.tester.RequireTestBuilder;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 /**
- * {@link RequireTest} should be used with objects that override {@link Object#equals(Object)}.
+ * {@link IdentityEqualsRequireTest} should be used with objects that
+ *  do <b>not</b> override {@link Object#equals(Object)} and boxed primitives.
  * @param <T> The type of value
  * @param <F> The {@link RequireFaultBuilder} type
  * @param <R> The {@link Require} type
- * @see IdentityEqualsRequireTest
+ * @see RequireTest
  */
-abstract non-sealed class RequireTest<T, F extends RequireFaultBuilder<T, F>, R extends Require<T, F, R>>
+abstract non-sealed class IdentityEqualsRequireTest<T, F extends RequireFaultBuilder<T, F>, R extends Require<T, F, R>>
 	extends BaseRequireTest<T, F, R> {
 
-	RequireTest( RequireTestBuilder<T, F, R> builder ) {
+	IdentityEqualsRequireTest( RequireTestBuilder<T, F, R> builder ) {
 		super( builder );
 	}
 
@@ -28,27 +28,21 @@ abstract non-sealed class RequireTest<T, F extends RequireFaultBuilder<T, F>, R 
 
 		T actual = randomValue();
 		tester.pass( actual, actual );
-
-		actual = randomValue();
-		tester.fault( actual, checkedCopyValue( actual ) );
 	}
 
 	@Test
 	@Override
 	final void isNotTheSameAs() {
 		var tester = builder.<T>test(
-			Require::isNotTheSameAs,
-			( faultBuilder, expected ) -> faultBuilder.isNotTheSameAs()
-		)
+				Require::isNotTheSameAs,
+				( faultBuilder, expected ) -> faultBuilder.isNotTheSameAs()
+			)
 			.pass( null, randomValue() )
 			.pass( randomValue(), null )
 			.fault( null, null );
 
 		T actual = randomValue();
 		tester.fault( actual, actual );
-
-		actual = randomValue();
-		tester.pass( actual, checkedCopyValue( actual ) );
 	}
 
 	@Test
@@ -61,9 +55,6 @@ abstract non-sealed class RequireTest<T, F extends RequireFaultBuilder<T, F>, R 
 
 		T actual = randomValue();
 		tester.pass( actual, actual );
-
-		actual = randomValue();
-		tester.pass( actual, checkedCopyValue( actual ) );
 
 		actual = randomValue();
 		tester.fault( actual, randomValue( actual ) );
@@ -82,18 +73,6 @@ abstract non-sealed class RequireTest<T, F extends RequireFaultBuilder<T, F>, R 
 
 		actual = randomValue();
 		tester.fault( actual, actual );
-
-		actual = randomValue();
-		tester.fault( actual, checkedCopyValue( actual ) );
 	}
-
-	private T checkedCopyValue( T source ) {
-		T copy = copyValue( source );
-		Assertions.assertNotSame( source, copy, "Copy cannot be the same reference" );
-		Assertions.assertEquals( source, copy, "Copy must be the equal" );
-		return copy;
-	}
-
-	protected abstract T copyValue( T source );
 
 }

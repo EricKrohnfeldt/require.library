@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
 
-final class RequireBooleanTest extends SingletonRequireTest<Boolean, RequireBooleanFaultBuilder, RequireBoolean> {
+final class RequireBooleanTest extends IdentityEqualsRequireTest<Boolean, RequireBooleanFaultBuilder, RequireBoolean> {
 
 	RequireBooleanTest() {
 		super( RequireTestBuilder.with(
