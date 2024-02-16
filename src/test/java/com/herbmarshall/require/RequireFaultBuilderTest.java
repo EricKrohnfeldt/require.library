@@ -195,7 +195,7 @@ abstract class RequireFaultBuilderTest<T, B extends RequireFaultBuilder<T, B>> {
 			testBuilder(
 				RequireFaultBuilder::isTheSameAs,
 				actual,
-				null,
+				( T ) null,
 				SAME_MESSAGE_TEMPLATE.formatted( toIdentifier( actual ), 0 )
 			);
 		}
@@ -290,7 +290,7 @@ abstract class RequireFaultBuilderTest<T, B extends RequireFaultBuilder<T, B>> {
 			testBuilder(
 				RequireFaultBuilder::isEqualTo,
 				actual,
-				null,
+				( T ) null,
 				EQUAL_MESSAGE_TEMPLATE.formatted( actual, null )
 			);
 		}
@@ -346,7 +346,7 @@ abstract class RequireFaultBuilderTest<T, B extends RequireFaultBuilder<T, B>> {
 			testBuilder(
 				RequireFaultBuilder::isNotEqualTo,
 				actual,
-				null,
+				( T ) null,
 				NOT_EQUAL_MESSAGE_TEMPLATE.formatted( actual, null )
 			);
 		}
@@ -396,19 +396,19 @@ abstract class RequireFaultBuilderTest<T, B extends RequireFaultBuilder<T, B>> {
 		);
 	}
 
-	protected final void testBuilder(
-		BiFunction<B, T, Fault<AssertionError>> function,
+	protected final <U> void testBuilder(
+		BiFunction<B, U, Fault<AssertionError>> function,
 		T actual,
-		T expected,
+		U parameter,
 		String errorMessage
 	) {
-		testBuilder( function, actual, expected, null, errorMessage );
+		testBuilder( function, actual, parameter, null, errorMessage );
 	}
 
-	protected final void testBuilder(
-		BiFunction<B, T, Fault<AssertionError>> function,
+	protected final <U> void testBuilder(
+		BiFunction<B, U, Fault<AssertionError>> function,
 		T actual,
-		T expected,
+		U parameter,
 		String customMessage,
 		String errorMessage
 	) {
@@ -416,7 +416,7 @@ abstract class RequireFaultBuilderTest<T, B extends RequireFaultBuilder<T, B>> {
 		B builder = initializeFaultBuilder( actual )
 			.withMessage( customMessage );
 		// Act
-		Fault<AssertionError> output = function.apply( builder, expected );
+		Fault<AssertionError> output = function.apply( builder, parameter );
 		// Assert
 		Assertions.assertEquals(
 			new Fault<>( AssertionError.class, errorMessage ),
