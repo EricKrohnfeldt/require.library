@@ -10,23 +10,23 @@ import java.util.UUID;
 import java.util.function.BiFunction;
 
 /**
- * A tester for 'actual / condition' {@link Require} methods.
- * @param <T> The type of value to operate on
- * @param <C> The type of condition to operate on
+ * A tester for 'actual / expected' {@link Require} methods.
+ * @param <A> The type of {@code actual} to operate on
+ * @param <E> The type of {@code expected} to operate on
  * @param <F> The type of {@link RequireFaultBuilder} to operate with
  * @param <R> The type of {@link Require} to operate with
  */
-public final class SingleParameterRequireTester<T, C, F extends RequireFaultBuilder<T, F>, R extends Require<T, F, R>> {
+public final class SingleParameterRequireTester<A, E, F extends RequireFaultBuilder<A, F>, R extends Require<A, F, R>> {
 
-	private final RequireTestBuilder<T, F, R> builder;
+	private final RequireTestBuilder<A, F, R> builder;
 
-	private final BiFunction<R, C, R> assertMethod;
-	private final BiFunction<F, C, Fault<AssertionError>> errorMethod;
+	private final BiFunction<R, E, R> assertMethod;
+	private final BiFunction<F, E, Fault<AssertionError>> errorMethod;
 
 	SingleParameterRequireTester(
-		RequireTestBuilder<T, F, R> builder,
-		BiFunction<R, C, R> assertMethod,
-		BiFunction<F, C, Fault<AssertionError>> errorMethod
+		RequireTestBuilder<A, F, R> builder,
+		BiFunction<R, E, R> assertMethod,
+		BiFunction<F, E, Fault<AssertionError>> errorMethod
 	) {
 		this.builder = Objects.requireNonNull( builder );
 		this.assertMethod = Objects.requireNonNull( assertMethod );
@@ -35,15 +35,15 @@ public final class SingleParameterRequireTester<T, C, F extends RequireFaultBuil
 
 	/**
 	 * Run the test with passing inputs.
-	 * @param actual The actual value for the assertion
-	 * @param condition The condition use for evaluation
+	 * @param actual The {@code actual} value for the assertion
+	 * @param expected The {@code expected} use for evaluation
 	 * @return A self reference
 	 */
-	public SingleParameterRequireTester<T, C, F, R> pass( T actual, C condition ) {
+	public SingleParameterRequireTester<A, E, F, R> pass( A actual, E expected ) {
 		// Arrange
 		R require = builder.that( actual );
 		// Act
-		R self = assertMethod.apply( require, condition );
+		R self = assertMethod.apply( require, expected );
 		// Assert
 		Assertions.assertSame( require, self );
 		return this;
@@ -51,26 +51,26 @@ public final class SingleParameterRequireTester<T, C, F extends RequireFaultBuil
 
 	/**
 	 * Run the test with failing inputs.
-	 * @param actual The actual value for the assertion
-	 * @param condition The condition use for evaluation
+	 * @param actual The {@code actual} value for the assertion
+	 * @param expected The {@code expected} use for evaluation
 	 * @return A self reference
 	 */
-	public SingleParameterRequireTester<T, C, F, R> fault( T actual, C condition ) {
+	public SingleParameterRequireTester<A, E, F, R> fault( A actual, E expected ) {
 		fault(
-			condition,
+			expected,
 			builder.that( actual ).withDefaultMessage(),
 			errorMethod.apply(
 				builder.fault( actual ).withDefaultMessage(),
-				condition
+				expected
 			)
 		);
 		String message = randomString();
 		fault(
-			condition,
+			expected,
 			builder.that( actual ).withMessage( message ),
 			errorMethod.apply(
 				builder.fault( actual ).withMessage( message ),
-				condition
+				expected
 			)
 		);
 		return this;
@@ -78,25 +78,25 @@ public final class SingleParameterRequireTester<T, C, F extends RequireFaultBuil
 
 	/**
 	 * Run the test with failing inputs but with 'non-standard' {@link Fault}.
-	 * @param actual The actual value for the assertion
-	 * @param condition The condition use for evaluation
+	 * @param actual The {@code actual} value for the assertion
+	 * @param expected The {@code expected} use for evaluation
 	 * @param fault An alternative {@link Fault} to expect
 	 * @return A self reference
 	 */
-	public SingleParameterRequireTester<T, C, F, R> fault( T actual, C condition, Fault<AssertionError> fault ) {
+	public SingleParameterRequireTester<A, E, F, R> fault( A actual, E expected, Fault<AssertionError> fault ) {
 		fault(
-			condition,
+			expected,
 			builder.that( actual ),
 			fault
 		);
 		return this;
 	}
 
-	private void fault( C condition, R require, Fault<AssertionError> fault ) {
+	private void fault( E expected, R require, Fault<AssertionError> fault ) {
 		// Arrange
 		// Act
 		try {
-			assertMethod.apply( require, condition );
+			assertMethod.apply( require, expected );
 			Assertions.fail( "Expected method to fail, it did not" );
 		}
 		// Assert

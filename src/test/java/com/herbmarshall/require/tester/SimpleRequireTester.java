@@ -12,19 +12,19 @@ import java.util.function.UnaryOperator;
 
 /**
  * A tester for 'actual only' ( no expected ) {@link Require} methods.
- * @param <T> The type of value to operate on
+ * @param <A> The type of {@code actual} to operate on
  * @param <F> The type of {@link RequireFaultBuilder} to operate with
  * @param <R> The type of {@link Require} to operate with
  */
-public final class SimpleRequireTester<T, F extends RequireFaultBuilder<T, F>, R extends Require<T, F, R>> {
+public final class SimpleRequireTester<A, F extends RequireFaultBuilder<A, F>, R extends Require<A, F, R>> {
 
-	private final RequireTestBuilder<T, F, R> builder;
+	private final RequireTestBuilder<A, F, R> builder;
 
 	private final UnaryOperator<R> assertMethod;
 	private final Function<F, Fault<AssertionError>> errorMethod;
 
 	SimpleRequireTester(
-		RequireTestBuilder<T, F, R> builder,
+		RequireTestBuilder<A, F, R> builder,
 		UnaryOperator<R> assertMethod,
 		Function<F, Fault<AssertionError>> errorMethod
 	) {
@@ -35,10 +35,10 @@ public final class SimpleRequireTester<T, F extends RequireFaultBuilder<T, F>, R
 
 	/**
 	 * Run the test with passing inputs.
-	 * @param actual The actual value for the assertion
+	 * @param actual The {@code actual} value for the assertion
 	 * @return A self reference
 	 */
-	public SimpleRequireTester<T, F, R> pass( T actual ) {
+	public SimpleRequireTester<A, F, R> pass( A actual ) {
 		// Arrange
 		R require = builder.that( actual );
 		// Act
@@ -50,10 +50,10 @@ public final class SimpleRequireTester<T, F extends RequireFaultBuilder<T, F>, R
 
 	/**
 	 * Run the test with failing inputs.
-	 * @param actual The actual value for the assertion
+	 * @param actual The {@code actual} value for the assertion
 	 * @return A self reference
 	 */
-	public SimpleRequireTester<T, F, R> fault( T actual ) {
+	public SimpleRequireTester<A, F, R> fault( A actual ) {
 		fault(
 			builder.that( actual ).withDefaultMessage(),
 			builder.fault( actual ).withDefaultMessage()
