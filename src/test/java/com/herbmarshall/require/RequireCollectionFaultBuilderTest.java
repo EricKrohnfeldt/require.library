@@ -5,8 +5,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
 
-import static com.herbmarshall.require.RequireCollectionFaultBuilder.DOES_CONTAIN_TEMPLATE;
-import static com.herbmarshall.require.RequireCollectionFaultBuilder.DOES_NOT_CONTAIN_TEMPLATE;
+import static com.herbmarshall.require.RequireCollectionFaultBuilder.*;
 import static com.herbmarshall.require.RequireFaultBuilder.NOT_NULL_MESSAGE_TEMPLATE;
 import static com.herbmarshall.require.RequireListFaultBuilder.IMMUTABLE_MESSAGE_TEMPLATE;
 import static com.herbmarshall.require.RequireListFaultBuilder.MUTABLE_MESSAGE_TEMPLATE;
@@ -26,6 +25,32 @@ abstract class RequireCollectionFaultBuilderTest<
 	}
 
 	abstract E randomElement();
+
+	@Nested
+	class isEmpty {
+
+		@Test
+		void happyPath() {
+			C actual = randomValue();
+			E element = randomElement();
+			testBuilder(
+				RequireCollectionFaultBuilder::isEmpty,
+				actual,
+				IS_EMPTY_TEMPLATE.formatted( collectionTypeName, actual )
+			);
+		}
+
+		@Test
+		void actual_null() {
+			E element = randomElement();
+			testBuilder(
+				builder -> builder.contains( element ),
+				null,
+				NOT_NULL_MESSAGE_TEMPLATE
+			);
+		}
+
+	}
 
 	@Nested
 	class contains {
@@ -108,7 +133,7 @@ abstract class RequireCollectionFaultBuilderTest<
 			testBuilder(
 				B::isMutable,
 				actual,
-				addCollectionName( MUTABLE_MESSAGE_TEMPLATE )
+				MUTABLE_MESSAGE_TEMPLATE.formatted( collectionTypeName )
 			);
 		}
 
@@ -117,20 +142,19 @@ abstract class RequireCollectionFaultBuilderTest<
 			testBuilder(
 				B::isMutable,
 				null,
-				addCollectionName( MUTABLE_MESSAGE_TEMPLATE )
+				MUTABLE_MESSAGE_TEMPLATE.formatted( collectionTypeName )
 			);
 		}
 
 		@Test
 		void message_provided() {
-			// Arrange
 			C actual = randomValue();
 			String message = randomString();
 			testBuilder(
 				B::isMutable,
 				actual,
 				message,
-				buildCustom( message, addCollectionName( MUTABLE_MESSAGE_TEMPLATE ) )
+				buildCustom( message, MUTABLE_MESSAGE_TEMPLATE.formatted( collectionTypeName ) )
 			);
 		}
 
@@ -144,7 +168,7 @@ abstract class RequireCollectionFaultBuilderTest<
 			testBuilder(
 				B::isImmutable,
 				actual,
-				addCollectionName( IMMUTABLE_MESSAGE_TEMPLATE )
+				IMMUTABLE_MESSAGE_TEMPLATE.formatted( collectionTypeName )
 			);
 		}
 
@@ -154,27 +178,22 @@ abstract class RequireCollectionFaultBuilderTest<
 			testBuilder(
 				B::isImmutable,
 				null,
-				addCollectionName( IMMUTABLE_MESSAGE_TEMPLATE )
+				IMMUTABLE_MESSAGE_TEMPLATE.formatted( collectionTypeName )
 			);
 		}
 		@Test
 
 		void message_provided() {
-			// Arrange
 			C actual = randomValue();
 			String message = randomString();
 			testBuilder(
 				B::isImmutable,
 				actual,
 				message,
-				buildCustom( message, addCollectionName( IMMUTABLE_MESSAGE_TEMPLATE ) )
+				buildCustom( message, IMMUTABLE_MESSAGE_TEMPLATE.formatted( collectionTypeName ) )
 			);
 		}
 
-	}
-
-	private String addCollectionName( String template ) {
-		return template.formatted( collectionTypeName );
 	}
 
 }

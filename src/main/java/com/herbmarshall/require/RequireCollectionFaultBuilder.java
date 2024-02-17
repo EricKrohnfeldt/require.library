@@ -20,6 +20,8 @@ public abstract sealed class RequireCollectionFaultBuilder<
 	extends RequireFaultBuilder<C, SELF>
 	permits RequireListFaultBuilder, RequireSetFaultBuilder {
 
+	static final String IS_EMPTY_TEMPLATE = "Required %s to be empty, but contains %s";
+
 	static final String DOES_CONTAIN_TEMPLATE = "Required that %s is an element of %s";
 	static final String DOES_NOT_CONTAIN_TEMPLATE = "Required that %s is NOT an element of %s";
 
@@ -31,6 +33,13 @@ public abstract sealed class RequireCollectionFaultBuilder<
 	RequireCollectionFaultBuilder( C actual, String collectionTypeName ) {
 		super( actual );
 		this.collectionTypeName = Require.notNull( collectionTypeName );
+	}
+
+	/** Create a {@link Fault} for {@link RequireCollection#isEmpty()}. */
+	public final Fault<AssertionError> isEmpty() {
+		return actual == null ?
+			Require.notNullFault() :
+			build( IS_EMPTY_TEMPLATE.formatted( collectionTypeName, actual ) );
 	}
 
 	/** Create a {@link Fault} for {@link RequireCollection#contains(Object)}. */

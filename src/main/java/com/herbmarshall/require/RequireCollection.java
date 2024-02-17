@@ -27,6 +27,19 @@ public abstract sealed class RequireCollection<
 	}
 
 	/**
+	 * Checks if {@code actual} is empty, contains no elements.
+	 * @throws AssertionError if {@code actual} is {@code null}
+	 * @throws AssertionError if {@code actual} contains one or more elements
+	 * @return A self reference.
+	 */
+	public SELF isEmpty() {
+		Require.notNull( actual );
+		if ( actual.isEmpty() )
+			return self();
+		throw fault.isEmpty().build();
+	}
+
+	/**
 	 * Checks if {@code element} is contained within {@code actual}.
 	 * @param element The value to check for containment.
 	 * @return A self reference

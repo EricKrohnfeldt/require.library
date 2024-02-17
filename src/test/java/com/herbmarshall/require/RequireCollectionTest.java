@@ -30,6 +30,25 @@ abstract class RequireCollectionTest<
 	abstract Collector<E, ?, C> immutableCollector();
 
 	@Nested
+	class isEmpty {
+
+		@Test
+		void standardTests() {
+			C empty = randomMutable();
+			empty.clear();
+			builder.test(
+				RequireCollection::isEmpty,
+				RequireCollectionFaultBuilder::isEmpty
+			)
+				.pass( empty )
+				.fault( randomMutable() )
+				.fault( randomImmutable() )
+				.fault( null );
+		}
+
+	}
+
+	@Nested
 	class contains {
 
 		@Test
