@@ -222,7 +222,7 @@ abstract sealed class BaseRequireTest<T, F extends RequireFaultBuilder<T, F>, R 
 			// Arrange
 			T value = randomValue();
 			// Act
-			T output = Require.that( value ).done();
+			T output = builder.that( value ).done();
 			// Assert
 			Assertions.assertSame( value, output );
 		}
@@ -231,7 +231,7 @@ abstract sealed class BaseRequireTest<T, F extends RequireFaultBuilder<T, F>, R 
 		void nullActual() {
 			// Arrange
 			// Act
-			T output = Require.that( ( T ) null ).done();
+			T output = builder.that( null ).done();
 			// Assert
 			Assertions.assertNull( output );
 		}
