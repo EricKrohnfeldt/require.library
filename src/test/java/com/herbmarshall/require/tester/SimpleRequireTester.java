@@ -54,13 +54,14 @@ public final class SimpleRequireTester<A, F extends RequireFaultBuilder<A, F>, R
 	 * @return A self reference
 	 */
 	public SimpleRequireTester<A, F, R> fault( A actual ) {
+		final R require = builder.that( actual );
 		fault(
-			builder.that( actual ).withDefaultMessage(),
+			require.withDefaultMessage(),
 			builder.fault( actual ).withDefaultMessage()
 		);
 		String message = randomString();
 		fault(
-			builder.that( actual ).withMessage( message ),
+			require.withMessage( message ),
 			builder.fault( actual ).withMessage( message )
 		);
 		return this;

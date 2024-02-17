@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Stream;
 
 /**
  * Module to provide data assertions.
@@ -21,7 +22,8 @@ public abstract sealed class Require<T, F extends RequireFaultBuilder<T, F>, SEL
 		RequireBoolean,
 		RequirePointer,
 		RequireOptional,
-		RequireCollection {
+		RequireCollection,
+		RequireStream {
 
 	static final String SETUP_DIFF_MESSAGE = "No diff generated, please set DiffGenerator";
 	private static final DiffGenerator defaultDiffGen = new NoopDiffGenerator( SETUP_DIFF_MESSAGE );
@@ -226,6 +228,16 @@ public abstract sealed class Require<T, F extends RequireFaultBuilder<T, F>, SEL
 	}
 
 	/**
+	 * Create a {@link Require} for specific {@link Stream} of data.
+	 * @param actual The {@link Stream} to evaluate
+	 * @return A new {@link RequireStream} instance
+	 * @param <E> The type of element stored in the {@link Stream}
+	 */
+	public static <E> RequireStream<E> that( Stream<E> actual ) {
+		return new RequireStream<>( actual );
+	}
+
+	/**
 	 * Create a {@link RequireBooleanFaultBuilder} for specific {@link Boolean} data.
 	 * @param actual The {@link Boolean} to evaluate
 	 * @return A new {@link RequirePointerFaultBuilder} instance
@@ -273,6 +285,16 @@ public abstract sealed class Require<T, F extends RequireFaultBuilder<T, F>, SEL
 	 */
 	public static <E> RequireSetFaultBuilder<E> fault( Set<E> actual ) {
 		return new RequireSetFaultBuilder<>( actual );
+	}
+
+	/**
+	 * Create a {@link RequireStreamFaultBuilder} for specific {@link Stream} of data.
+	 * @param actual The {@link Stream} to evaluate
+	 * @return A new {@link RequireStreamFaultBuilder} instance
+	 * @param <E> The type of element stored in the {@link Stream}
+	 */
+	public static <E> RequireStreamFaultBuilder<E> fault( Stream<E> actual ) {
+		return new RequireStreamFaultBuilder<>( actual );
 	}
 
 	/**

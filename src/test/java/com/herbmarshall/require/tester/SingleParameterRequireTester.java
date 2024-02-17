@@ -56,9 +56,10 @@ public final class SingleParameterRequireTester<A, E, F extends RequireFaultBuil
 	 * @return A self reference
 	 */
 	public SingleParameterRequireTester<A, E, F, R> fault( A actual, E expected ) {
+		final R require = builder.that( actual );
 		fault(
 			expected,
-			builder.that( actual ).withDefaultMessage(),
+			require.withDefaultMessage(),
 			errorMethod.apply(
 				builder.fault( actual ).withDefaultMessage(),
 				expected
@@ -67,7 +68,7 @@ public final class SingleParameterRequireTester<A, E, F extends RequireFaultBuil
 		String message = randomString();
 		fault(
 			expected,
-			builder.that( actual ).withMessage( message ),
+			require.withMessage( message ),
 			errorMethod.apply(
 				builder.fault( actual ).withMessage( message ),
 				expected
