@@ -95,6 +95,57 @@ final class RequireOptionalFaultBuilderTest
 
 	}
 
+	@Nested
+	class contains {
+
+		@Test
+		void actual_populated() {
+			Object expected = randomObject();
+			Optional<Object> actual = Optional.of( expected );
+			testBuilder(
+				RequireOptionalFaultBuilder::contains,
+				actual,
+				expected,
+				CONTAINS.formatted( expected )
+			);
+		}
+
+		@Test
+		void actual_null() {
+			Object expected = randomObject();
+			testBuilder(
+				RequireOptionalFaultBuilder::contains,
+				null,
+				expected,
+				CONTAINS_NULL.formatted( expected )
+			);
+		}
+
+		@Test
+		void actual_empty() {
+			Object expected = randomObject();
+			Optional<Object> actual = Optional.empty();
+			testBuilder(
+				RequireOptionalFaultBuilder::contains,
+				actual,
+				expected,
+				CONTAINS.formatted( expected )
+			);
+		}
+
+		@Test
+		void actual_empty_expected_null() {
+			Optional<Object> actual = Optional.empty();
+			testBuilder(
+				RequireOptionalFaultBuilder::contains,
+				actual,
+				null,
+				CONTAINS.formatted( ( Object ) null )
+			);
+		}
+
+	}
+
 	@Override
 	protected RequireOptionalFaultBuilder<Object> initializeFaultBuilder( Optional<Object> actual ) {
 		return new RequireOptionalFaultBuilder<>( actual );

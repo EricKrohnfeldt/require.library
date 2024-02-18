@@ -20,6 +20,9 @@ public final class RequireOptionalFaultBuilder<T>
 	static final String IS_EMPTY = IS_EMPTY_BASIC + ", it contains '%s'";
 	static final String IS_EMPTY_NULL = IS_EMPTY_BASIC + ", however it is null";
 
+	static final String CONTAINS = "Require Optional to contain %s, however it is empty";
+	static final String CONTAINS_NULL = "Require Optional to contain %s, however it is null";
+
 	RequireOptionalFaultBuilder( Optional<T> actual ) {
 		super( actual );
 	}
@@ -37,6 +40,11 @@ public final class RequireOptionalFaultBuilder<T>
 				.map( IS_EMPTY::formatted )
 				.orElse( IS_EMPTY_BASIC )
 		);
+	}
+
+	/** Create a {@link Fault} for {@link RequireOptional#contains(Object)}. */
+	public Fault<AssertionError> contains( T expected ) {
+		return build( ( actual == null ? CONTAINS_NULL : CONTAINS ).formatted( expected ) );
 	}
 
 }

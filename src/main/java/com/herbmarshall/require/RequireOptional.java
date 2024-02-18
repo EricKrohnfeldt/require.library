@@ -1,5 +1,6 @@
 package com.herbmarshall.require;
 
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -38,6 +39,22 @@ public final class RequireOptional<T>
 		if ( actual == null || actual.isPresent() )
 			throw fault.isEmpty().build();
 		return self();
+	}
+
+	/**
+	 * Checks if {@code actual} contains a value equal to {@code expected}.
+	 * @param expected The value to check for equality.
+	 * @return A self reference
+	 * @throws AssertionError if {@code actual} is null or {@code expected} is not equal to contained value
+	 */
+	@SuppressWarnings( "OptionalAssignedToNull" )
+	public RequireOptional<T> contains( T expected ) {
+		if ( actual != null && Objects.equals(
+			actual.orElse( null ),
+			expected
+		) )
+			return self();
+		throw fault.contains( expected ).build();
 	}
 
 	/**

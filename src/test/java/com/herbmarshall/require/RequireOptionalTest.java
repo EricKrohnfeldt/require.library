@@ -26,7 +26,7 @@ final class RequireOptionalTest
 				RequireOptional::isPresent,
 				RequireOptionalFaultBuilder::isPresent
 			)
-				.pass( Optional.of( random() ) )
+				.pass( Optional.of( randomElement() ) )
 				.fault( Optional.empty() )
 				.fault( null );
 		}
@@ -43,8 +43,30 @@ final class RequireOptionalTest
 				RequireOptionalFaultBuilder::isEmpty
 			)
 				.pass( Optional.empty() )
-				.fault( Optional.of( random() ) )
+				.fault( Optional.of( randomElement() ) )
 				.fault( null );
+		}
+
+	}
+
+	@Nested
+	class contains {
+
+		@Test
+		void standardTests() {
+			var tester = builder.test(
+				RequireOptional::contains,
+				RequireOptionalFaultBuilder::contains
+			)
+				.pass( Optional.empty(), null )
+				.fault( null, null )
+				.fault( null, randomElement() )
+				.fault( randomValue(), null )
+				.fault( randomValue(), randomElement() );
+
+			Object expected = randomElement();
+			Optional<Object> actual = Optional.of( expected );
+			tester.pass( actual, expected );
 		}
 
 	}
@@ -55,7 +77,7 @@ final class RequireOptionalTest
 		@Test
 		void actual_isPresent() {
 			// Arrange
-			Object expected = random();
+			Object expected = randomElement();
 			RequireOptional<Object> require = Require.that( Optional.of( expected ) );
 			// Act
 			RequirePointer<Object> output = require.value();
@@ -74,9 +96,10 @@ final class RequireOptionalTest
 		}
 
 		@Test
+		@SuppressWarnings( "OptionalAssignedToNull" )
 		void actual_null() {
 			// Arrange
-			RequireOptional<Object> require = Require.that( Optional.empty() );
+			RequireOptional<Object> require = Require.that( ( Optional<Object> ) null );
 			// Act
 			try {
 				require.value();
@@ -91,7 +114,7 @@ final class RequireOptionalTest
 
 	@Override
 	protected Optional<Object> randomValue() {
-		return Optional.of( random() );
+		return Optional.of( randomElement() );
 	}
 
 	@Override
@@ -100,7 +123,7 @@ final class RequireOptionalTest
 		return Optional.ofNullable( source.orElse( null ) );
 	}
 
-	private static Object random() {
+	private static Object randomElement() {
 		return UUID.randomUUID();
 	}
 
