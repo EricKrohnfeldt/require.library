@@ -42,7 +42,7 @@ public final class RequireStream<E>
 	 * @return A self reference
 	 * @throws AssertionError if {@code actual} and  {@code expected} are not equal ( including {@code null} equality )
 	 */
-	public RequireStream<E> isEqualTo( List<E> expected ) {
+	public RequireStream<E> isEqualTo( List<? extends E> expected ) {
 		if ( isEqualTo( expected, this::actualToList ) )
 			return self();
 		throw fault.isEqualTo( expected ).build();
@@ -54,13 +54,16 @@ public final class RequireStream<E>
 	 * @return A self reference
 	 * @throws AssertionError if {@code actual} and  {@code expected} are not equal ( including {@code null} equality )
 	 */
-	public RequireStream<E> isEqualTo( Set<E> expected ) {
+	public RequireStream<E> isEqualTo( Set<? extends E> expected ) {
 		if ( isEqualTo( expected, this::actualToSet ) )
 			return self();
 		throw fault.isEqualTo( expected ).build();
 	}
 
-	private <C extends Collection<E>> boolean isEqualTo( C expected, Supplier<Optional<C>> supplier ) {
+	private <C extends Collection<? extends E>> boolean isEqualTo(
+		C expected,
+		Supplier<Optional<? extends C>> supplier
+	) {
 		return Objects.equals(
 			supplier.get().orElse( null ),
 			expected

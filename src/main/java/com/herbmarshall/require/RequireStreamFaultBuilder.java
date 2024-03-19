@@ -30,12 +30,12 @@ public final class RequireStreamFaultBuilder<E>
 	}
 
 	/** Create a {@link Fault} for {@link RequireStream#isEqualTo(List)}. */
-	public Fault<AssertionError> isEqualTo( List<E> list ) {
+	public Fault<AssertionError> isEqualTo( List<? extends E> list ) {
 		return build( ( actual == null ? IS_EQUAL_NULL : IS_EQUAL ).formatted( list ) );
 	}
 
 	/** Create a {@link Fault} for {@link RequireStream#isEqualTo(Set)}. */
-	public Fault<AssertionError> isEqualTo( Set<E> set ) {
+	public Fault<AssertionError> isEqualTo( Set<? extends E> set ) {
 		return build( ( actual == null ? IS_EQUAL_NULL : IS_EQUAL ).formatted( set ) );
 	}
 
