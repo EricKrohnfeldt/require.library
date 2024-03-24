@@ -185,7 +185,10 @@ abstract class RequireFaultBuilderTest<T, B extends RequireFaultBuilder<T, B>> {
 				RequireFaultBuilder::isTheSameAs,
 				null,
 				expectedValue,
-				SAME_MESSAGE_TEMPLATE.formatted( 0, toIdentifier( expectedValue ) )
+				SAME_MESSAGE_TEMPLATE.formatted(
+					NULL_AS_STRING,
+					toIdentifier( expectedValue )
+				)
 			);
 		}
 
@@ -196,7 +199,7 @@ abstract class RequireFaultBuilderTest<T, B extends RequireFaultBuilder<T, B>> {
 				RequireFaultBuilder::isTheSameAs,
 				actual,
 				( T ) null,
-				SAME_MESSAGE_TEMPLATE.formatted( toIdentifier( actual ), 0 )
+				SAME_MESSAGE_TEMPLATE.formatted( toIdentifier( actual ), NULL_AS_STRING )
 			);
 		}
 
@@ -240,7 +243,7 @@ abstract class RequireFaultBuilderTest<T, B extends RequireFaultBuilder<T, B>> {
 			testBuilder(
 				RequireFaultBuilder::isNotTheSameAs,
 				null,
-				NOT_SAME_MESSAGE_TEMPLATE.formatted( 0 )
+				NOT_SAME_MESSAGE_TEMPLATE.formatted( NULL_AS_STRING )
 			);
 		}
 

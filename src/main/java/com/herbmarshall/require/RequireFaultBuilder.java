@@ -30,6 +30,8 @@ public abstract sealed class RequireFaultBuilder<T, SELF extends RequireFaultBui
 	static final String EQUAL_MESSAGE_TEMPLATE = "Expected '%s' to be equal to '%s'";
 	static final String NOT_EQUAL_MESSAGE_TEMPLATE = "Expected '%s' to not equal '%s'";
 
+	static final String NULL_AS_STRING = "null";
+
 	final T actual;
 
 	private String message;
@@ -108,7 +110,9 @@ public abstract sealed class RequireFaultBuilder<T, SELF extends RequireFaultBui
 	}
 
 	private String toIdentifier( T value ) {
-		return Integer.toHexString( System.identityHashCode( value ) );
+		return value == null ?
+			NULL_AS_STRING :
+			Integer.toHexString( System.identityHashCode( value ) );
 	}
 
 }
