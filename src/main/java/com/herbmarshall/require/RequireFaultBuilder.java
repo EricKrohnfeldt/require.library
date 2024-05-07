@@ -1,7 +1,7 @@
 package com.herbmarshall.require;
 
+import com.herbmarshall.base.SelfTyped;
 import com.herbmarshall.fault.Fault;
-import com.herbmarshall.javaExtension.SelfTyped;
 
 import java.util.Optional;
 

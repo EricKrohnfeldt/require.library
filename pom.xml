@@ -9,47 +9,47 @@
 
 	<parent>
 		<groupId>      com.herbmarshall   </groupId>
-		<artifactId>      LibraryParent   </artifactId>
-		<version>                  1.15   </version>
+		<artifactId>        library.pom   </artifactId>
+		<version>                  1.17   </version>
 	</parent>
 
-	<artifactId>require.library</artifactId>
-	<version>1.14-SNAPSHOT</version>
-	<packaging>jar</packaging>
+	<artifactId>      require   </artifactId>
+	<version>   1.14-SNAPSHOT   </version>
+	<packaging>           jar   </packaging>
 
 	<properties>
 
 		<util.major>   1   </util.major>
 
-		<fault.minor>           15   </fault.minor>
-		<javaExtension.minor>   14   </javaExtension.minor>
+		<base.minor>    18   </base.minor>
+		<fault.minor>   17   </fault.minor>
 
-		<fault.version>                   ${util.major}.${fault.minor}   </fault.version>
-		<javaExtension.version>   ${util.major}.${javaExtension.minor}   </javaExtension.version>
+		<base.version>     ${util.major}.${base.minor}   </base.version>
+		<fault.version>   ${util.major}.${fault.minor}   </fault.version>
 
 	</properties>
 
 	<dependencies>
 
 		<dependency>
-			<groupId>           com.herbmarshall   </groupId>
-			<artifactId>           fault.library   </artifactId>
-			<version>           ${fault.version}   </version>
+			<groupId>   com.herbmarshall   </groupId>
+			<artifactId>            base   </artifactId>
+			<version>    ${base.version}   </version>
 		</dependency>
 
 		<dependency>
-			<groupId>           com.herbmarshall   </groupId>
-			<artifactId>   javaExtension.library   </artifactId>
-			<version>   ${javaExtension.version}   </version>
+			<groupId>   com.herbmarshall   </groupId>
+			<artifactId>           fault   </artifactId>
+			<version>   ${fault.version}   </version>
 		</dependency>
 
 	</dependencies>
 
 	<repositories>
 		<repository>
-			<id>Nexus</id>
-			<name>HerbMarshall Repository</name>
-			<url>https://nexus.herb.herbmarshall.com/repository/maven-public/</url>
+			<id>                                                           Nexus   </id>
+			<name>                                       HerbMarshall Repository   </name>
+			<url>   https://nexus.herb.herbmarshall.com/repository/maven-public/   </url>
 		</repository>
 	</repositories>
 
