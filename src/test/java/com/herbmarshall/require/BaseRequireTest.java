@@ -16,6 +16,7 @@ package com.herbmarshall.require;
 
 import com.herbmarshall.fault.Fault;
 import com.herbmarshall.require.tester.RequireTestBuilder;
+import com.herbmarshall.standardPipe.OverridePlan;
 import com.herbmarshall.standardPipe.Standard;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Nested;
@@ -64,6 +65,7 @@ abstract sealed class BaseRequireTest<T, F extends RequireFaultBuilder<T, F>, R 
 		// Act
 		try {
 			RequirePointer.fail();
+			//noinspection UnreachableCode
 			Assertions.fail();
 		}
 		catch ( AssertionError e ) {
@@ -78,6 +80,7 @@ abstract sealed class BaseRequireTest<T, F extends RequireFaultBuilder<T, F>, R 
 		// Act
 		try {
 			RequirePointer.fail( message );
+			//noinspection UnreachableCode
 			Assertions.fail();
 		}
 		catch ( AssertionError e ) {
@@ -156,20 +159,19 @@ abstract sealed class BaseRequireTest<T, F extends RequireFaultBuilder<T, F>, R 
 			String actual = randomString();
 			String expected = randomString();
 			ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-			Standard.err.override( buffer );
+			OverridePlan override = Standard.err.withOverride( buffer );
 			RequirePointer<String> require = RequirePointer.that( actual );
 			// Act
-			try {
-				require.isEqualTo( expected );
-				Assertions.fail();
-			}
-			// Assert
-			catch ( AssertionError e ) {
-				RequirePointer.fault( actual ).isEqualTo( expected ).validate( e );
-			}
-			finally {
-				Standard.err.reset();
-			}
+			override.execute( () -> {
+				try {
+					require.isEqualTo( expected );
+					Assertions.fail();
+				}
+				// Assert
+				catch ( AssertionError e ) {
+					RequirePointer.fault( actual ).isEqualTo( expected ).validate( e );
+				}
+			} );
 			Assertions.assertEquals( SETUP_DIFF_MESSAGE + "\n", buffer.toString() );
 		}
 
@@ -179,24 +181,25 @@ abstract sealed class BaseRequireTest<T, F extends RequireFaultBuilder<T, F>, R 
 			String actual = randomString();
 			String expected = randomString();
 			ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-			Standard.err.override( buffer );
+			OverridePlan override = Standard.err.withOverride( buffer );
 			String diff = randomString();
 			DiffGeneratorStub generator = new DiffGeneratorStub( diff );
 			RequirePointer.setDiffGenerator( generator );
 			RequirePointer<String> require = RequirePointer.that( actual );
 			// Act
-			try {
-				require.isEqualTo( expected );
-				Assertions.fail();
-			}
-			// Assert
-			catch ( AssertionError e ) {
-				RequirePointer.fault( actual ).isEqualTo( expected ).validate( e );
-			}
-			finally {
-				Standard.err.reset();
-				RequirePointer.setDiffGenerator( null );
-			}
+			override.execute( () -> {
+				try {
+					require.isEqualTo( expected );
+					Assertions.fail();
+				}
+				// Assert
+				catch ( AssertionError e ) {
+					RequirePointer.fault( actual ).isEqualTo( expected ).validate( e );
+				}
+				finally {
+					RequirePointer.setDiffGenerator( null );
+				}
+			} );
 			Assertions.assertEquals( actual, generator.getActual() );
 			Assertions.assertEquals( expected, generator.getExpected() );
 			Assertions.assertEquals( diff + "\n", buffer.toString() );
@@ -208,21 +211,20 @@ abstract sealed class BaseRequireTest<T, F extends RequireFaultBuilder<T, F>, R 
 			String actual = randomString();
 			String expected = randomString();
 			ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-			Standard.err.override( buffer );
+			OverridePlan override = Standard.err.withOverride( buffer );
 			RequirePointer.setDiffGenerator( null );
 			RequirePointer<String> require = RequirePointer.that( actual );
 			// Act
-			try {
-				require.isEqualTo( expected );
-				Assertions.fail();
-			}
-			// Assert
-			catch ( AssertionError e ) {
-				RequirePointer.fault( actual ).isEqualTo( expected ).validate( e );
-			}
-			finally {
-				Standard.err.reset();
-			}
+			override.execute( () -> {
+				try {
+					require.isEqualTo( expected );
+					Assertions.fail();
+				}
+				// Assert
+				catch ( AssertionError e ) {
+					RequirePointer.fault( actual ).isEqualTo( expected ).validate( e );
+				}
+			} );
 			Assertions.assertEquals( SETUP_DIFF_MESSAGE + "\n", buffer.toString() );
 		}
 
