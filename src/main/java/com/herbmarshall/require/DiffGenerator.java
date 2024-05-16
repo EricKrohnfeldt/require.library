@@ -14,7 +14,16 @@
 
 package com.herbmarshall.require;
 
-/** Module to generate a diff visualization of two objects. */
+import com.herbmarshall.base.diff.DiffVisualizer;
+
+/**
+ * Module to generate a diff visualization of two objects.
+ * @deprecated <a href="https://herbmarshall.atlassian.net/browse/UTIL-350">UTIL-350</a>
+ *  Please replace with {@link com.herbmarshall.base.diff.DiffGenerator} and set with {@link DiffVisualizer}
+ * @see DiffVisualizer
+ */
+@SuppressWarnings( "DeprecatedIsStillUsed" )
+@Deprecated( since = "1.14", forRemoval = true )
 public interface DiffGenerator {
 
 	/**

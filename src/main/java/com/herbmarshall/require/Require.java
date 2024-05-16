@@ -15,6 +15,7 @@
 package com.herbmarshall.require;
 
 import com.herbmarshall.base.SelfTyped;
+import com.herbmarshall.base.diff.DiffVisualizer;
 import com.herbmarshall.fault.Fault;
 import com.herbmarshall.standardPipe.Standard;
 
@@ -38,10 +39,6 @@ public abstract sealed class Require<T, F extends RequireFaultBuilder<T, F>, SEL
 		RequireOptional,
 		RequireCollection,
 		RequireStream {
-
-	static final String SETUP_DIFF_MESSAGE = "No diff generated, please set DiffGenerator";
-	private static final DiffGenerator defaultDiffGen = new NoopDiffGenerator( SETUP_DIFF_MESSAGE );
-	private static DiffGenerator diffGen = defaultDiffGen;
 
 	static final String TODO_ENVIRONMENT_VARIABLE_NAME = "preliminaryTest";
 	static final String TODO_ENVIRONMENT_VARIABLE_VALUE = "true";
@@ -102,13 +99,13 @@ public abstract sealed class Require<T, F extends RequireFaultBuilder<T, F>, SEL
 	/**
 	 * Will check that {@code expected} is equal to {@code actual}.
 	 * Based on the {@link Object#equals(Object)} method.
-	 * On failure, {@link DiffGenerator} will generate a diff and print it to {@link Standard#err}
+	 * On failure, {@link DiffVisualizer} will generate a diff and print it to {@link Standard#err}
 	 * @return A self reference
 	 * @throws AssertionError if {@code expected} is NOT equal to {@code actual}
 	 */
 	public final SELF isEqualTo( T expected ) {
 		if ( ! checkEqual( expected ) ) {
-			Standard.err.println( diffGen.diff( actual, expected ) );
+			Standard.err.println( DiffVisualizer.generate( expected, actual ) );
 			throw fault.isEqualTo( expected ).build();
 		}
 //		Objects.requireNonNull( message );
@@ -331,6 +328,11 @@ public abstract sealed class Require<T, F extends RequireFaultBuilder<T, F>, SEL
 	/**
 	 * Will fail unless environment variable {@value Require#TODO_ENVIRONMENT_VARIABLE_NAME}
 	 *  is set to {@value Require#TODO_ENVIRONMENT_VARIABLE_VALUE}.
+	 * <p>
+	 *     In IntelliJ, go to Run -> Edit Configurations -> Edit Configuration Templates -> Junit.
+	 *     Then add '{@value Require#TODO_ENVIRONMENT_VARIABLE_NAME}={@value Require#TODO_ENVIRONMENT_VARIABLE_VALUE}'
+	 *     to the VM Options, not environment variables.
+	 * </p>
 	 * @throws AssertionError conditionally
 	 */
 	public static void todo() {
@@ -352,9 +354,15 @@ public abstract sealed class Require<T, F extends RequireFaultBuilder<T, F>, SEL
 	/**
 	 * Set the {@link DiffGenerator} to use when {@link Require#isEqualTo(Object)} fails.
 	 * @param diffGenerator The {@link DiffGenerator} to use.  {@code null} value will set to default
+	 * @deprecated <a href="https://herbmarshall.atlassian.net/browse/UTIL-350">UTIL-350</a>
+	 *  Please use {@link DiffVisualizer#setGenerator(com.herbmarshall.base.diff.DiffGenerator)}
+	 * @see DiffVisualizer#setGenerator(com.herbmarshall.base.diff.DiffGenerator)
 	 */
+	@SuppressWarnings( { "removal", "DeprecatedIsStillUsed" } )
+	@Deprecated( since = "1.14", forRemoval = true )
 	public static void setDiffGenerator( DiffGenerator diffGenerator ) {
-		Require.diffGen = Objects.requireNonNullElse( diffGenerator, defaultDiffGen );
+		DiffVisualizer.setGenerator(
+			diffGenerator == null ? null : ( expected, actual ) -> diffGenerator.diff( actual, expected ) );
 	}
 
 	private static boolean checkForPreliminaryTestFlag() {

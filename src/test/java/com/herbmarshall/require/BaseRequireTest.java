@@ -26,11 +26,13 @@ import java.io.ByteArrayOutputStream;
 import java.util.Optional;
 import java.util.UUID;
 
-import static com.herbmarshall.require.RequirePointer.*;
+import static com.herbmarshall.require.RequirePointer.TODO_ENVIRONMENT_VARIABLE_NAME;
+import static com.herbmarshall.require.RequirePointer.TODO_ENVIRONMENT_VARIABLE_VALUE;
 
 abstract sealed class BaseRequireTest<T, F extends RequireFaultBuilder<T, F>, R extends Require<T, F, R>>
 	permits RequireTest, IdentityEqualsRequireTest {
 
+	private static final String SETUP_DIFF_MESSAGE = "No diff generated, please set DiffGenerator";
 	private static final int RANDOM_EXCEPT_ATTEMPTS = 1000;
 
 	protected final RequireTestBuilder<T, F, R> builder;
@@ -64,7 +66,7 @@ abstract sealed class BaseRequireTest<T, F extends RequireFaultBuilder<T, F>, R 
 		// Arrange
 		// Act
 		try {
-			RequirePointer.fail();
+			Require.fail();
 			//noinspection UnreachableCode
 			Assertions.fail();
 		}
@@ -79,7 +81,7 @@ abstract sealed class BaseRequireTest<T, F extends RequireFaultBuilder<T, F>, R 
 		String message = randomString();
 		// Act
 		try {
-			RequirePointer.fail( message );
+			Require.fail( message );
 			//noinspection UnreachableCode
 			Assertions.fail();
 		}
@@ -97,7 +99,7 @@ abstract sealed class BaseRequireTest<T, F extends RequireFaultBuilder<T, F>, R 
 				// Arrange
 				// Act
 				try {
-					RequirePointer.todo();
+					Require.todo();
 					Assertions.fail();
 				}
 				// Assert
@@ -110,7 +112,7 @@ abstract sealed class BaseRequireTest<T, F extends RequireFaultBuilder<T, F>, R 
 		@Test
 		void preliminary() {
 			temporarilySetSystemValue( TODO_ENVIRONMENT_VARIABLE_VALUE, () ->
-				Assertions.assertDoesNotThrow( () -> RequirePointer.todo() )
+				Assertions.assertDoesNotThrow( () -> Require.todo() )
 			);
 		}
 
@@ -126,7 +128,7 @@ abstract sealed class BaseRequireTest<T, F extends RequireFaultBuilder<T, F>, R 
 				String message = randomString();
 				// Act
 				try {
-					RequirePointer.todo( message );
+					Require.todo( message );
 					Assertions.fail();
 				}
 				// Assert
@@ -143,7 +145,7 @@ abstract sealed class BaseRequireTest<T, F extends RequireFaultBuilder<T, F>, R 
 				String message = randomString();
 				// Act / Assert
 				Assertions.assertDoesNotThrow(
-					() -> RequirePointer.todo( message )
+					() -> Require.todo( message )
 				);
 			} );
 		}
@@ -151,6 +153,7 @@ abstract sealed class BaseRequireTest<T, F extends RequireFaultBuilder<T, F>, R 
 	}
 
 	@Nested
+	@SuppressWarnings( "removal" )
 	class setDiffGenerator {
 
 		@Test
@@ -160,7 +163,7 @@ abstract sealed class BaseRequireTest<T, F extends RequireFaultBuilder<T, F>, R 
 			String expected = randomString();
 			ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 			OverridePlan override = Standard.err.withOverride( buffer );
-			RequirePointer<String> require = RequirePointer.that( actual );
+			RequirePointer<String> require = Require.that( actual );
 			// Act
 			override.execute( () -> {
 				try {
@@ -169,7 +172,7 @@ abstract sealed class BaseRequireTest<T, F extends RequireFaultBuilder<T, F>, R 
 				}
 				// Assert
 				catch ( AssertionError e ) {
-					RequirePointer.fault( actual ).isEqualTo( expected ).validate( e );
+					Require.fault( actual ).isEqualTo( expected ).validate( e );
 				}
 			} );
 			Assertions.assertEquals( SETUP_DIFF_MESSAGE + "\n", buffer.toString() );
@@ -180,12 +183,12 @@ abstract sealed class BaseRequireTest<T, F extends RequireFaultBuilder<T, F>, R 
 			// Arrange
 			String actual = randomString();
 			String expected = randomString();
+			String salt = randomString();
 			ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 			OverridePlan override = Standard.err.withOverride( buffer );
-			String diff = randomString();
-			DiffGeneratorStub generator = new DiffGeneratorStub( diff );
-			RequirePointer.setDiffGenerator( generator );
-			RequirePointer<String> require = RequirePointer.that( actual );
+			DiffGenerator generator = ( a, e ) -> e + salt + a;
+			Require.setDiffGenerator( generator );
+			RequirePointer<String> require = Require.that( actual );
 			// Act
 			override.execute( () -> {
 				try {
@@ -194,15 +197,13 @@ abstract sealed class BaseRequireTest<T, F extends RequireFaultBuilder<T, F>, R 
 				}
 				// Assert
 				catch ( AssertionError e ) {
-					RequirePointer.fault( actual ).isEqualTo( expected ).validate( e );
+					Require.fault( actual ).isEqualTo( expected ).validate( e );
 				}
 				finally {
-					RequirePointer.setDiffGenerator( null );
+					Require.setDiffGenerator( null );
 				}
 			} );
-			Assertions.assertEquals( actual, generator.getActual() );
-			Assertions.assertEquals( expected, generator.getExpected() );
-			Assertions.assertEquals( diff + "\n", buffer.toString() );
+			Assertions.assertEquals( expected + salt + actual + "\n", buffer.toString() );
 		}
 
 		@Test
@@ -212,8 +213,9 @@ abstract sealed class BaseRequireTest<T, F extends RequireFaultBuilder<T, F>, R 
 			String expected = randomString();
 			ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 			OverridePlan override = Standard.err.withOverride( buffer );
-			RequirePointer.setDiffGenerator( null );
-			RequirePointer<String> require = RequirePointer.that( actual );
+			Require.setDiffGenerator( ( a, e ) -> randomString() );
+			Require.setDiffGenerator( null );
+			RequirePointer<String> require = Require.that( actual );
 			// Act
 			override.execute( () -> {
 				try {
@@ -222,7 +224,7 @@ abstract sealed class BaseRequireTest<T, F extends RequireFaultBuilder<T, F>, R 
 				}
 				// Assert
 				catch ( AssertionError e ) {
-					RequirePointer.fault( actual ).isEqualTo( expected ).validate( e );
+					Require.fault( actual ).isEqualTo( expected ).validate( e );
 				}
 			} );
 			Assertions.assertEquals( SETUP_DIFF_MESSAGE + "\n", buffer.toString() );
