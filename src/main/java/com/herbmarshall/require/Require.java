@@ -14,6 +14,7 @@
 
 package com.herbmarshall.require;
 
+import com.herbmarshall.base.Equals;
 import com.herbmarshall.base.SelfTyped;
 import com.herbmarshall.base.diff.DiffVisualizer;
 import com.herbmarshall.fault.Fault;
@@ -104,37 +105,12 @@ public abstract sealed class Require<T, F extends RequireFaultBuilder<T, F>, SEL
 	 * @throws AssertionError if {@code expected} is NOT equal to {@code actual}
 	 */
 	public final SELF isEqualTo( T expected ) {
-		if ( ! checkEqual( expected ) ) {
+		if ( ! Equals.evaluate( expected, actual ) ) {
 			Standard.err.println( DiffVisualizer.generate( expected, actual ) );
 			throw fault.isEqualTo( expected ).build();
 		}
-//		Objects.requireNonNull( message );
-//		if ( expected != null && expected.getClass().isArray() )
-//			isArrayEqual( message, ( Object[] ) expected, ( Object[] ) actual );
-//		else
-//			isObjectEqual( message, expected, actual );
 		return self();
 	}
-
-//	private void isObjectEqual( String message, T expected, T actual ) {
-//		try {
-//			Assertions.assertEquals( expected, actual, message );
-//		}
-//		catch ( AssertionFailedError e ) {
-//			printer.println( diffVisualizer.diff( expected, actual ) );
-//			throw e;
-//		}
-//	}
-//
-//	private void isArrayEqual( String message, Object[] expected, Object[] actual ) {
-//		try {
-//			Assertions.assertArrayEquals( expected, actual, message );
-//		}
-//		catch ( AssertionFailedError e ) {
-//			printer.println( diffVisualizer.diff( expected, actual ) );
-//			throw e;
-//		}
-//	}
 
 	/**
 	 * Will check that {@code expected} is equal to {@code actual}.
@@ -143,14 +119,9 @@ public abstract sealed class Require<T, F extends RequireFaultBuilder<T, F>, SEL
 	 * @throws AssertionError if {@code expected} is equal to {@code actual}
 	 */
 	public final SELF isNotEqualTo( T expected ) {
-		if ( checkEqual( expected ) )
+		if ( Equals.evaluate( expected, actual ) )
 			throw fault.isNotEqualTo( expected ).build();
 		return self();
-	}
-
-	private boolean checkEqual( T expected ) {
-		return ( actual == null ) == ( expected == null ) &&
-			( actual == null || actual.equals( expected ) );
 	}
 
 	/** Set the displayed error message to the default. */
