@@ -18,7 +18,7 @@
 
 	<scm>
 		<developerConnection>scm:git:ssh://git.herb.herbmarshall.com/repository/util/require.library</developerConnection>
-		<tag>HEAD</tag>
+		<tag>require-1.18</tag>
 	</scm>
 
 	<parent>
@@ -28,7 +28,7 @@
 	</parent>
 
 	<artifactId>      require   </artifactId>
-	<version>   1.18-SNAPSHOT   </version>
+	<version>   1.18   </version>
 	<packaging>           jar   </packaging>
 
 	<properties>
